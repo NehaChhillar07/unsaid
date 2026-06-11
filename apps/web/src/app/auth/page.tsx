@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { worldVars } from '@/lib/theme';
 import { MaskIcon } from '@/components/MaskIcon';
 import { sendMagicLink } from './actions';
+import { AnonSignInButton } from './AnonSignInButton';
 import styles from './auth.module.css';
 
 export const metadata: Metadata = {
@@ -47,8 +48,12 @@ export default async function AuthPage({
           <>
             <h1 className={styles.title}>get in quietly</h1>
             <p className={styles.copy}>
-              drop your email and we&rsquo;ll send a magic link. no password, no profile, no trace
-              on the outside.
+              the quietest way in: no email, no password, nothing at all.
+            </p>
+            <AnonSignInButton />
+            <p className={styles.copy} style={{ marginTop: 18 }}>
+              or drop an email for a magic link — handy if you ever switch phones and want your
+              spills back.
             </p>
             {error && <p className={styles.error}>{error}</p>}
             <form action={sendMagicLink} className={styles.form}>

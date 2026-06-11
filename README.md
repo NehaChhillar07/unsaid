@@ -17,7 +17,7 @@ docs/            privacy policy, moderation policy, App Review notes
 
 ## Founder TODO — everything below is free
 
-1. **Supabase** — create a project at supabase.com → grab `Project URL`, `anon key`, `service_role key`. This unblocks the live deploy.
+1. **Supabase** — create a project at supabase.com → grab `Project URL`, `anon key`, `service_role key`. This unblocks the live deploy. In the dashboard, enable **Authentication → Sign in / up → Anonymous sign-ins** (the primary way in — no email needed; abuse is covered by the new-account rate limits + captcha option).
 2. **OpenAI API key** — platform.openai.com (the moderation endpoint we use is free).
 3. **Vercel** — account for web deploys (free tier; gives a `*.vercel.app` URL until there's a domain).
 4. Optional but recommended: **PostHog** (analytics) + **Sentry** (crashes) accounts.

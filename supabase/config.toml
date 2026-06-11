@@ -1,0 +1,47 @@
+# Supabase CLI config for unsaid (local dev).
+# Defaults are used for anything not specified here.
+
+project_id = "unsaid"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 100
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+# Every function requires a valid JWT — all writes are caller-authenticated.
+[functions.publish]
+verify_jwt = true
+
+[functions.react]
+verify_jwt = true
+
+[functions.report]
+verify_jwt = true
+
+[functions.mute]
+verify_jwt = true
+
+[functions.role-check]
+verify_jwt = true
+
+[functions.wipe-account]
+verify_jwt = true
+
+[functions.notify-batch]
+verify_jwt = true

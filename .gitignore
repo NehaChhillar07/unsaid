@@ -1,0 +1,13 @@
+node_modules/
+.expo/
+dist/
+.next/
+.vercel/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+supabase/.temp/
+ios/
+android/

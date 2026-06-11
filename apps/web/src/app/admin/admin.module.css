@@ -1,0 +1,186 @@
+/* admin — plain, fast, readable. speed over beauty. */
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  font-family: var(--font-ui), sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid light-dark(#e2ddd6, #3a352f);
+}
+
+.brand {
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 14px;
+}
+
+.nav a {
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.who {
+  margin-left: auto;
+  opacity: 0.55;
+  font-size: 12px;
+}
+
+.h1 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11.5px;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+  padding: 6px 10px;
+  border-bottom: 1px solid light-dark(#e2ddd6, #3a352f);
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid light-dark(#efebe4, #2c2823);
+  vertical-align: top;
+}
+
+.body {
+  max-width: 420px;
+  font-family: var(--font-confession), serif;
+  font-size: 13.5px;
+}
+
+.meta {
+  font-size: 12px;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: light-dark(#efebe4, #2c2823);
+}
+
+.pillHidden {
+  background: #f5d9a866;
+}
+
+.pillRemoved {
+  background: #e8b4a866;
+}
+
+.pillLive {
+  background: #bcd6bc66;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actions form {
+  display: inline;
+}
+
+.actionBtn {
+  padding: 5px 10px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  background: light-dark(#efebe4, #2c2823);
+  transition: opacity 0.15s;
+}
+
+.actionBtn:hover {
+  opacity: 0.8;
+}
+
+.danger {
+  background: #c4543c22;
+  color: light-dark(#a4422e, #e09480);
+}
+
+.empty {
+  padding: 40px 0;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.filterRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filterRow a {
+  padding: 5px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 12.5px;
+  background: light-dark(#efebe4, #2c2823);
+  opacity: 0.75;
+}
+
+.filterOn {
+  opacity: 1 !important;
+  font-weight: 700;
+  outline: 1.5px solid light-dark(#b8b0a4, #5a5248);
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  flex: 1 1 180px;
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: light-dark(#f4f0ea, #26221d);
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 12px;
+  opacity: 0.6;
+}

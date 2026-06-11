@@ -1,0 +1,229 @@
+/* unsaid — global styles. design custom props + keyframes ported from Unsaid.html.
+   all microcopy lowercase. soft radii, gradients not borders. */
+
+:root {
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui), 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font-family: var(--font-ui), 'Space Grotesk', sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ── themed scope ─────────────────────────────────────────────
+   a wrapper sets the world-specific *-light / *-dark custom props inline
+   (via worldVars()/cardVars() in src/lib/theme.ts); this block resolves
+   them per color scheme so SSR'd markup is dark-mode-correct with no JS. */
+.themed {
+  --ink: var(--ink-light);
+  --ink-soft: var(--ink-soft-light);
+  --ink-ambient: var(--ink-light);
+  --world-bg: var(--world-bg-light);
+  --card-grad: var(--card-grad-light);
+  --sheet-bg: var(--sheet-bg-light);
+  --card-sheen: rgba(255, 255, 255, 0.22);
+  --card-shadow: 0 18px 44px rgba(59, 51, 43, 0.16);
+  --deck-shadow: 0 12px 30px rgba(59, 51, 43, 0.1);
+  --glass: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --badge-bg: rgba(255, 255, 255, 0.55);
+  --badge-bg-flat: rgba(0, 0, 0, 0.04);
+  --react-bg: rgba(255, 255, 255, 0.5);
+  --surface: rgba(255, 255, 255, 0.7);
+  --surface-solid: #ffffff;
+  --overlay: rgba(20, 10, 18, 0.38);
+  --chip-mix: 15%;
+  --accent-mix: 16%;
+  color: var(--ink-ambient);
+}
+
+@media (prefers-color-scheme: dark) {
+  .themed {
+    --ink: var(--ink-dark);
+    --ink-soft: var(--ink-soft-dark);
+    --ink-ambient: var(--ink-ambient-dark);
+    --world-bg: var(--world-bg-dark);
+    --card-grad: var(--card-grad-dark);
+    --sheet-bg: var(--sheet-bg-dark);
+    --card-sheen: rgba(255, 255, 255, 0.05);
+    --card-shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
+    --deck-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    --glass: rgba(255, 255, 255, 0.13);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --badge-bg: rgba(255, 255, 255, 0.17);
+    --badge-bg-flat: rgba(255, 255, 255, 0.1);
+    --react-bg: rgba(255, 255, 255, 0.13);
+    --surface: rgba(255, 255, 255, 0.07);
+    --surface-solid: #201d1a;
+    --overlay: rgba(10, 6, 10, 0.55);
+    --chip-mix: 20%;
+    --accent-mix: 28%;
+  }
+}
+
+/* ── keyframes (ported from Unsaid.html) ───────────────────── */
+
+@keyframes floatUp {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx, 0), -160px) rotate(var(--rot, 0deg));
+    opacity: 0;
+  }
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(14px, -10px);
+  }
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.6;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* full-viewport variant: prototype clipped to 1180px inside a phone frame;
+   on the open web we clip to 160vmax so the reveal always covers the screen. */
+@keyframes worldReveal {
+  from {
+    clip-path: circle(0px at var(--ox, 50%) var(--oy, 50%));
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1);
+  }
+  to {
+    clip-path: circle(160vmax at var(--ox, 50%) var(--oy, 50%));
+    transform: scale(1);
+  }
+}
+
+@keyframes revealSheen {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+@keyframes planeFly {
+  0% {
+    transform: translate(-50%, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(110px, -560px) rotate(26deg) scale(0.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+  }
+}

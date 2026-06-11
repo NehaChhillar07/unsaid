@@ -1,0 +1,55 @@
+/* RoleBadge + MoodChip — ported from unsaid-core.jsx */
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.flat {
+  background: var(--badge-bg-flat);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.moodChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tint) var(--chip-mix, 15%), transparent);
+  color: var(--tint);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .moodChip {
+    color: #fff;
+  }
+}
+
+.moodDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--tint);
+  flex-shrink: 0;
+}

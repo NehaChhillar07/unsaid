@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "unsaid",
+    "slug": "unsaid",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "unsaid",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.unsaid.app",
+      "supportsTablet": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

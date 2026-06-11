@@ -1,0 +1,70 @@
+.page {
+  min-height: 100dvh;
+  background: var(--world-bg);
+}
+
+.doc {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 22px 72px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-ambient);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-ambient);
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+
+.doc h1 {
+  font-family: var(--font-confession);
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 1.25;
+  margin: 0 0 18px;
+}
+
+.doc h2 {
+  font-family: var(--font-ui);
+  font-size: 19px;
+  font-weight: 700;
+  margin: 34px 0 10px;
+}
+
+.doc h3 {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.doc p {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+}
+
+.doc li {
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+}
+
+.doc strong {
+  color: var(--ink-ambient);
+  font-weight: 600;
+}
+
+.doc hr {
+  border: none;
+  height: 1px;
+  background: color-mix(in srgb, var(--ink-soft) 25%, transparent);
+  margin: 28px 0;
+}

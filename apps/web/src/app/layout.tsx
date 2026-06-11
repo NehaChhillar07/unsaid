@@ -1,5 +1,6 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Lora } from 'next/font/google';
+import { UnsaidAppProvider } from '@/components/AppContext';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -36,12 +37,32 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'unsaid',
+  },
+  icons: {
+    apple: '/apple-touch-icon.png',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ECE5DC' },
+    { media: '(prefers-color-scheme: dark)', color: '#1B1714' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${lora.variable}`}>
-      <body>{children}</body>
+      <body>
+        <UnsaidAppProvider>{children}</UnsaidAppProvider>
+      </body>
     </html>
   );
 }

@@ -1,0 +1,141 @@
+/* signed-in feed — fixed full-viewport screen */
+
+.screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overscroll-behavior: none;
+}
+
+/* desktop floating spill button — hidden on phones (tab bar has it) */
+.spillBtn {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 24px;
+  border-radius: 22px;
+  background: linear-gradient(140deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: transform 0.14s;
+}
+
+@media (min-width: 640px) {
+  .spillBtn {
+    display: inline-flex;
+  }
+}
+
+.spillBtn:active {
+  transform: translateX(-50%) scale(0.94);
+}
+
+/* new drops pill */
+.newDrops {
+  position: fixed;
+  top: calc(72px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 52;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 15px 9px 13px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: dropIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: manipulation;
+}
+
+.newDropsDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #fff;
+  animation: softPulse 1.4s ease-in-out infinite;
+}
+
+/* transient toast */
+.toast {
+  position: fixed;
+  top: calc(72px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 53;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--surface-solid);
+  color: var(--ink-ambient);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+  animation: dropIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  max-width: min(86vw, 420px);
+  text-align: center;
+}
+
+/* "you're not alone" ribbon */
+.ribbon {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: calc(72px + env(safe-area-inset-top));
+  display: flex;
+  justify-content: center;
+  z-index: 51;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ribbonOn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ribbonPill {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* reaction burst */
+.burstLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  overflow: visible;
+}
+
+.particle {
+  position: absolute;
+  animation-name: floatUp;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}

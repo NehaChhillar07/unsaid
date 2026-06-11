@@ -1,0 +1,141 @@
+/* save / report / mute sheet */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: fadeIn 0.22s ease;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--sheet-bg);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 18px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+  .sheet {
+    border-radius: 28px;
+    animation: fadeIn 0.22s ease;
+  }
+}
+
+.grabber {
+  width: 38px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ink-soft);
+  opacity: 0.4;
+  margin: 0 auto 6px;
+}
+
+@media (min-width: 640px) {
+  .grabber {
+    display: none;
+  }
+}
+
+.snippet {
+  font-family: var(--font-confession);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin: 0 4px 6px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: var(--ink-ambient);
+  transition: transform 0.12s;
+  touch-action: manipulation;
+}
+
+.row:active {
+  transform: scale(0.985);
+}
+
+.row:disabled {
+  opacity: 0.55;
+}
+
+.rowGlyph {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  color: var(--ink-soft);
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.rowLabel {
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.rowHint {
+  flex-basis: 100%;
+  margin-left: 33px;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.rowMuted .rowLabel {
+  color: #d9694c;
+}
+
+.cancel {
+  margin-top: 4px;
+  padding: 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.reportTitle {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-ambient);
+  margin: 2px 4px 0;
+}
+
+.reportSub {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 0 4px 6px;
+}

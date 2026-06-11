@@ -32,6 +32,20 @@ button {
   cursor: pointer;
 }
 
+/* mobile-web: no double-tap zoom delays on interactive elements */
+button,
+a,
+input,
+textarea,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 input,
 textarea {
   font-family: var(--font-ui), 'Space Grotesk', sans-serif;

@@ -14,9 +14,11 @@ interface Props {
   mode: Mode;
   reacted?: ReactionType | null;
   interactive?: boolean;
-  onFelt?: () => void;
-  onSame?: () => void;
+  onFelt?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onSame?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onReply?: () => void;
+  /** opens the save / report / mute action sheet (signed-in feed) */
+  onMore?: () => void;
 }
 
 function ReactStat({
@@ -30,7 +32,7 @@ function ReactStat({
   label: string;
   count: number;
   active: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
   const cls = `${styles.reactBtn}${active ? ` ${styles.reactActive}` : ''}`;
   const inner = (
@@ -56,6 +58,7 @@ export function ConfessionCard({
   onFelt,
   onSame,
   onReply,
+  onMore,
 }: Props) {
   const replyLabel = `${formatCount(post.comment_count)} ${post.comment_count === 1 ? 'reply' : 'replies'}`;
   return (
@@ -68,7 +71,14 @@ export function ConfessionCard({
             {relTime(post.created_at)}
           </span>
         </div>
-        {post.mood && <MoodChip mood={post.mood} />}
+        <div className={styles.headRight}>
+          {post.mood && <MoodChip mood={post.mood} />}
+          {interactive && onMore && (
+            <button type="button" className={styles.moreBtn} onClick={onMore} aria-label="more options">
+              ···
+            </button>
+          )}
+        </div>
       </header>
       <div className={styles.body}>
         <p className={post.body.length > 130 ? styles.textLong : styles.text}>{post.body}</p>

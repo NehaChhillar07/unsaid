@@ -1,0 +1,255 @@
+/* onboarding — warm personal world, soft orbs, ink primary button */
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--world-bg);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.orbTop,
+.orbBottom {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.orbTop {
+  top: -60px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+}
+
+.orbBottom {
+  bottom: 120px;
+  left: -50px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(64px + env(safe-area-inset-top)) 28px calc(40px + env(safe-area-inset-bottom));
+}
+
+.dots {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-ambient) 20%, transparent);
+  transition: width 0.3s;
+}
+
+.dotOn {
+  width: 22px;
+  background: var(--accent);
+}
+
+.title {
+  font-family: var(--font-ui);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink-ambient);
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.lede {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.worldLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-ambient);
+  white-space: nowrap;
+}
+
+.worldDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.fieldWrap {
+  margin-bottom: 4px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 0 14px;
+  height: 54px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.2s;
+}
+
+.fieldWarn {
+  border-color: rgba(232, 131, 107, 0.6);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: 15.5px;
+  color: var(--ink-ambient);
+  caret-color: var(--accent);
+}
+
+.input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.helper {
+  min-height: 18px;
+  padding: 5px 6px 0;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.helperWarn {
+  color: #d9694c;
+}
+
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.topicChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1.5px solid var(--glass-border);
+  color: var(--ink-ambient);
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.12s;
+  touch-action: manipulation;
+}
+
+.topicChip:active {
+  transform: scale(0.96);
+}
+
+.topicChipOn {
+  background: var(--ink-ambient);
+  border-color: transparent;
+  color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .topicChipOn {
+    color: #2d1a26;
+  }
+}
+
+.topicGlyph {
+  font-size: 15px;
+}
+
+.foot {
+  margin-top: auto;
+  padding-top: 28px;
+}
+
+.counterLine {
+  margin-bottom: 10px;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.error {
+  margin-bottom: 10px;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: #d9694c;
+}
+
+.primaryBtn {
+  width: 100%;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--ink-ambient);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 28px rgba(59, 51, 43, 0.22);
+  transition: transform 0.12s, opacity 0.2s;
+  touch-action: manipulation;
+}
+
+@media (prefers-color-scheme: dark) {
+  .primaryBtn {
+    color: #2d1a26;
+  }
+}
+
+.primaryBtn:active {
+  transform: scale(0.975);
+}
+
+.primaryBtn:disabled {
+  background: color-mix(in srgb, var(--ink-ambient) 18%, transparent);
+  color: var(--ink-soft);
+  box-shadow: none;
+  cursor: default;
+}
+
+.backBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-soft);
+}

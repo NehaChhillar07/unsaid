@@ -8,6 +8,7 @@ import { worldVars } from '@/lib/theme';
 import { ConfessionCard } from '@/components/ConfessionCard';
 import { RoleBadge } from '@/components/RoleBadge';
 import { MaskIcon } from '@/components/MaskIcon';
+import { PostReplyBar } from '@/components/PostReplyBar';
 import styles from './post.module.css';
 
 export const revalidate = 60;
@@ -75,6 +76,7 @@ export default async function PostPage({ params }: Params) {
         <section className={styles.replies} aria-label="replies">
           <h2 className={styles.repliesTitle}>replies</h2>
           <p className={styles.repliesSub}>kindness only. anonymous, role-tagged, stricter rules than posts.</p>
+          <PostReplyBar post={post} />
           {topLevel.length === 0 && (
             <p className={styles.emptyReplies}>
               no replies yet.

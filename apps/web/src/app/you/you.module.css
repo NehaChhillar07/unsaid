@@ -1,0 +1,432 @@
+/* you space — ported from YouSpace in unsaid-tabs.jsx */
+
+.page {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 6px 18px 32px;
+}
+
+.head {
+  padding: 8px 4px 18px;
+}
+
+.title {
+  font-family: var(--font-ui);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-ambient);
+  margin: 0;
+}
+
+.headRole {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.headNote {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+/* stats */
+
+.stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.stat {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 16px 14px;
+}
+
+.statValue {
+  font-family: var(--font-ui);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink-ambient);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+/* segments */
+
+.segs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  background: var(--glass);
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.segBtn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 11px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  touch-action: manipulation;
+}
+
+.segOn {
+  background: var(--surface-solid);
+  color: var(--ink-ambient);
+  font-weight: 700;
+  box-shadow: 0 1px 6px rgba(59, 51, 43, 0.1);
+}
+
+/* cards */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiet {
+  text-align: center;
+  padding: 30px 20px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.empty {
+  text-align: center;
+  padding: 36px 24px;
+  font-family: var(--font-confession);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.miniCard {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 14px 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.miniHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.miniWhen {
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  flex-shrink: 0;
+}
+
+.miniBody {
+  font-family: var(--font-confession);
+  font-size: 15.5px;
+  line-height: 1.4;
+  color: var(--ink-ambient);
+}
+
+.miniFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.miniCounts {
+  display: flex;
+  gap: 14px;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.hiddenTag {
+  color: #d9694c;
+  font-weight: 600;
+}
+
+.deleteBtn {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #d9694c;
+  touch-action: manipulation;
+}
+
+.openLink {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.draftCard {
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+
+.draftCard:active {
+  transform: scale(0.985);
+}
+
+.draftBody {
+  font-family: var(--font-confession);
+  font-style: italic;
+  font-size: 15.5px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.draftNote {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+
+/* account controls */
+
+.accountCard {
+  margin-top: 24px;
+  background: var(--surface);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 16px;
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink-ambient);
+  text-decoration: none;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink-ambient) 7%, transparent);
+  touch-action: manipulation;
+}
+
+.accountRow:last-child {
+  border-bottom: none;
+}
+
+.accountDanger {
+  color: #d9694c;
+  font-weight: 600;
+}
+
+.chev {
+  color: var(--ink-soft);
+}
+
+.signOut {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 16px;
+  background: var(--glass);
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  touch-action: manipulation;
+}
+
+.footNote {
+  text-align: center;
+  padding: 18px 30px 0;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── sheets (confirm / roles) ── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fadeIn 0.22s ease;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--sheet-bg);
+  border-radius: 28px 28px 0 0;
+  padding: 26px 24px calc(28px + env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+  .sheet {
+    border-radius: 28px;
+    animation: fadeIn 0.22s ease;
+  }
+}
+
+.sheetTitle {
+  font-family: var(--font-confession);
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink-ambient);
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+
+.sheetCopy {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 20px;
+}
+
+.sheetError {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: #d9694c;
+  margin: 0 0 12px;
+}
+
+.sheetConfirm {
+  width: 100%;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(140deg, var(--accent), var(--accent-deep));
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  transition: transform 0.14s, opacity 0.2s;
+  touch-action: manipulation;
+}
+
+.sheetConfirm:active {
+  transform: scale(0.98);
+}
+
+.sheetConfirm:disabled {
+  opacity: 0.55;
+}
+
+.sheetDanger {
+  background: linear-gradient(140deg, #c75b41, #a84a33);
+}
+
+.sheetCancel {
+  width: 100%;
+  height: 46px;
+  border-radius: 16px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* role fields inside the modal */
+
+.roleFieldWrap {
+  margin-bottom: 10px;
+}
+
+.roleFieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-ambient);
+  margin-bottom: 7px;
+}
+
+.roleDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.roleInput {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: 1.5px solid var(--glass-border);
+  background: var(--glass);
+  outline: none;
+  padding: 0 14px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--ink-ambient);
+  caret-color: var(--accent);
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.roleInputWarn {
+  border-color: rgba(232, 131, 107, 0.6);
+}
+
+.roleHelper {
+  min-height: 16px;
+  padding: 5px 4px 0;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.roleHelperWarn {
+  color: #d9694c;
+}

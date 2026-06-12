@@ -302,25 +302,6 @@ export function CardDeck({
           </div>
         )}
       </div>
-      {/* arrows + position — web navigation */}
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.arrowBtn}
-          onClick={goPrev}
-          disabled={index === 0}
-          aria-label="previous confession"
-        >
-          ←
-        </button>
-        <span className={styles.counter}>
-          {Math.min(index + 1, posts.length)} / {posts.length}
-        </span>
-        <button type="button" className={styles.arrowBtn} onClick={goNext} aria-label="next confession">
-          →
-        </button>
-      </div>
-      <div className={styles.hintLine}>swipe, drag or use arrow keys</div>
     </div>
   );
 }

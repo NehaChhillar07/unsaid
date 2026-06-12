@@ -16,15 +16,16 @@
   bottom: 4px;
   width: calc(50% - 4px);
   border-radius: 999px;
-  background: var(--surface-solid);
-  box-shadow: 0 2px 8px rgba(59, 51, 43, 0.14);
-  transition: left 0.56s cubic-bezier(0.34, 1.32, 0.46, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .thumb {
-    background: rgba(255, 255, 255, 0.24);
-  }
+  /* selected side carries the world's accent with a soft spreading glow;
+     --accent morphs with the active world, so the color crossfades too */
+  background: linear-gradient(140deg, var(--accent), var(--accent-deep));
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 6px 22px 2px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition:
+    left 0.56s cubic-bezier(0.34, 1.32, 0.46, 1),
+    background 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
 .opt {
@@ -44,7 +45,12 @@
 
 .optActive {
   font-weight: 700;
-  color: var(--ink-ambient);
+  color: #fff;
+}
+
+/* the world dot sits on its own accent when active — flip it white */
+.optActive .dot {
+  background: #fff !important;
 }
 
 .dot {

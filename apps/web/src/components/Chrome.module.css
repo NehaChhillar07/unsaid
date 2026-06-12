@@ -234,11 +234,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: translateY(-12px);
+  /* sit nearly level with the other tabs — the ios-style -12px float reads
+     misaligned inside the browser's bottom bar */
+  transform: translateY(-4px);
   transition: transform 0.14s;
   touch-action: manipulation;
 }
 
 .spillTab:active {
-  transform: translateY(-12px) scale(0.92);
+  transform: translateY(-4px) scale(0.92);
 }

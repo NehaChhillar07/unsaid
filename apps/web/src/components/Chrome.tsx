@@ -12,6 +12,7 @@ import { worldVars } from '@/lib/theme';
 import { useApp } from './AppContext';
 import { MaskIcon } from './MaskIcon';
 import { ModeToggle } from './ModeToggle';
+import { ThemeToggle } from './ThemeToggle';
 import { SignInModal } from './SignInModal';
 import { ComposeModal } from './ComposeModal';
 import styles from './Chrome.module.css';
@@ -92,6 +93,7 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
             <div className={styles.headerToggle}>
               <ModeToggle mode={mode} onChange={app.setMode} />
             </div>
+            <ThemeToggle />
             <nav className={styles.headerNav} aria-label="app">
               <Link
                 href="/felt"

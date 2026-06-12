@@ -18,9 +18,13 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .card {
+  :global(html:not([data-theme='light'])) .card {
     --card-grad: var(--card-grad-dark);
   }
+}
+
+:global(html[data-theme='dark']) .card {
+  --card-grad: var(--card-grad-dark);
 }
 
 /* soft linear sheen across the top-right corner */

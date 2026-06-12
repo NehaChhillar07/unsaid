@@ -59,7 +59,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${lora.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${lora.variable}`} suppressHydrationWarning>
+      <head>
+        {/* apply the persisted theme override before first paint (no flash) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('unsaid:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}})()",
+          }}
+        />
+      </head>
       <body>
         <UnsaidAppProvider>{children}</UnsaidAppProvider>
       </body>

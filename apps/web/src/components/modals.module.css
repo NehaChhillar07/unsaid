@@ -215,9 +215,13 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .moodBtnOn {
+  :global(html:not([data-theme='light'])) .moodBtnOn {
     color: #fff;
   }
+}
+
+:global(html[data-theme='dark']) .moodBtnOn {
+  color: #fff;
 }
 
 .moodDot {

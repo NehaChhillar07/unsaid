@@ -41,9 +41,13 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .moodChip {
+  :global(html:not([data-theme='light'])) .moodChip {
     color: #fff;
   }
+}
+
+:global(html[data-theme='dark']) .moodChip {
+  color: #fff;
 }
 
 .moodDot {

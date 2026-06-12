@@ -33,9 +33,13 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .ghostCard {
+  :global(html:not([data-theme='light'])) .ghostCard {
     --card-grad: var(--card-grad-dark);
   }
+}
+
+:global(html[data-theme='dark']) .ghostCard {
+  --card-grad: var(--card-grad-dark);
 }
 
 .nextLayer {

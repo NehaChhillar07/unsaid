@@ -189,9 +189,13 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .tabBar {
+  :global(html:not([data-theme='light'])) .tabBar {
     background: linear-gradient(to top, rgba(20, 12, 18, 0.9), transparent);
   }
+}
+
+:global(html[data-theme='dark']) .tabBar {
+  background: linear-gradient(to top, rgba(20, 12, 18, 0.9), transparent);
 }
 
 @media (min-width: 640px) {

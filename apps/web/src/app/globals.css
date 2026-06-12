@@ -87,8 +87,10 @@ a {
   color: var(--ink-ambient);
 }
 
+/* dark theme applies when the system prefers it (and the user hasn't forced
+   light), or when the user forced dark via the 🌙 toggle (html[data-theme]). */
 @media (prefers-color-scheme: dark) {
-  .themed {
+  html:not([data-theme='light']) .themed {
     --ink: var(--ink-dark);
     --ink-soft: var(--ink-soft-dark);
     --ink-ambient: var(--ink-ambient-dark);
@@ -109,6 +111,28 @@ a {
     --chip-mix: 20%;
     --accent-mix: 28%;
   }
+}
+
+html[data-theme='dark'] .themed {
+  --ink: var(--ink-dark);
+  --ink-soft: var(--ink-soft-dark);
+  --ink-ambient: var(--ink-ambient-dark);
+  --world-bg: var(--world-bg-dark);
+  --card-grad: var(--card-grad-dark);
+  --sheet-bg: var(--sheet-bg-dark);
+  --card-sheen: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
+  --deck-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  --glass: rgba(255, 255, 255, 0.13);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --badge-bg: rgba(255, 255, 255, 0.17);
+  --badge-bg-flat: rgba(255, 255, 255, 0.1);
+  --react-bg: rgba(255, 255, 255, 0.13);
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-solid: #201d1a;
+  --overlay: rgba(10, 6, 10, 0.55);
+  --chip-mix: 20%;
+  --accent-mix: 28%;
 }
 
 /* ── keyframes (ported from Unsaid.html) ───────────────────── */

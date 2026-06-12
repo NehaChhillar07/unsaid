@@ -26,8 +26,16 @@
   width: 100%;
   height: 78%;
   border-radius: 26px;
+  /* same inline-pair resolution as ConfessionCard's .card */
+  --card-grad: var(--card-grad-light);
   background: var(--card-grad);
   box-shadow: var(--deck-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ghostCard {
+    --card-grad: var(--card-grad-dark);
+  }
 }
 
 .nextLayer {

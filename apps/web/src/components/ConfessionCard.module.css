@@ -4,6 +4,10 @@
 .card {
   width: 100%;
   border-radius: 26px;
+  /* the gradient pair is set inline on this element (cardVars), so the
+     light/dark resolution must happen here too — resolving it on the
+     ancestor .themed scope can't see these vars and computes transparent. */
+  --card-grad: var(--card-grad-light);
   background: var(--card-grad);
   box-shadow: var(--card-shadow);
   display: flex;
@@ -11,6 +15,12 @@
   padding: 22px 22px 18px;
   position: relative;
   overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    --card-grad: var(--card-grad-dark);
+  }
 }
 
 /* soft linear sheen across the top-right corner */

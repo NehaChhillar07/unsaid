@@ -156,6 +156,14 @@
   flex-direction: column;
 }
 
+/* the tab bar is fixed and overlays the bottom — reserve its height so the
+   card centers in the *visible* area, not the full viewport */
+@media (max-width: 639px) {
+  .mainFeed {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
 /* chrome-less pages (signed-out landing) — no tab-bar allowance needed */
 .mainBare {
   flex: 1;

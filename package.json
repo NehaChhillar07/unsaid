@@ -5,6 +5,7 @@
   "scripts": {
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
+    "test": "node --test tests/",
     "web": "pnpm --filter @unsaid/web dev",
     "mobile": "pnpm --filter @unsaid/mobile start"
   },

@@ -97,6 +97,8 @@ function SignedOutLanding({ feeds }: Props) {
           <Link href="/legal/privacy">privacy</Link>
           <span aria-hidden="true">·</span>
           <Link href="/legal/anonymous">what anonymous means here</Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/legal/moderation">moderation & safety</Link>
           {app.user && (
             <>
               <span aria-hidden="true">·</span>

@@ -41,24 +41,31 @@ Deno.serve(async (req) => {
     if (tErr) throw tErr;
     if (!target) return errorJson('this one is gone', 404);
 
-    const { error: repErr } = await supa.from('reports').insert({
-      target_type: input.target_type,
-      target_id: input.target_id,
-      reporter_id: caller.id,
-      reason: input.reason,
-    });
+    // idempotent per (target, reporter): a unique index backs this, and we
+    // ignore duplicates so a user re-reporting the same item is a no-op.
+    const { error: repErr } = await supa.from('reports').upsert(
+      {
+        target_type: input.target_type,
+        target_id: input.target_id,
+        reporter_id: caller.id,
+        reason: input.reason,
+      },
+      { onConflict: 'target_type,target_id,reporter_id', ignoreDuplicates: true },
+    );
     if (repErr) throw repErr;
 
-    // auto-hide at threshold
-    const { count, error: cntErr } = await supa
+    // auto-hide at threshold — count DISTINCT reporters, never raw report rows,
+    // so a single user cannot take content down by reporting it repeatedly.
+    const { data: reporters, error: cntErr } = await supa
       .from('reports')
-      .select('id', { count: 'exact', head: true })
+      .select('reporter_id')
       .eq('target_type', input.target_type)
       .eq('target_id', input.target_id)
       .eq('state', 'open');
     if (cntErr) throw cntErr;
+    const distinctReporters = new Set((reporters ?? []).map((r) => r.reporter_id)).size;
 
-    if ((count ?? 0) >= AUTO_HIDE_THRESHOLD && target.status === 'live') {
+    if (distinctReporters >= AUTO_HIDE_THRESHOLD && target.status === 'live') {
       const { error: hideErr } = await supa
         .from(table)
         .update({ status: 'hidden' })
@@ -70,7 +77,7 @@ Deno.serve(async (req) => {
         target_id: input.target_id,
         verdict: 'auto-hidden',
         scores: {},
-        rule_hits: [`reports:${count}`],
+        rule_hits: [`reports:${distinctReporters}`],
       });
       if (logErr) console.error('[report] moderation_log insert failed', logErr);
     }

@@ -245,6 +245,10 @@ export function YouClient() {
             <span>anonymity &amp; data — what we keep</span>
             <span className={styles.chev}>›</span>
           </Link>
+          <Link href="/legal/moderation" className={styles.accountRow}>
+            <span>moderation &amp; safety</span>
+            <span className={styles.chev}>›</span>
+          </Link>
           <button
             type="button"
             className={`${styles.accountRow} ${styles.accountDanger}`}

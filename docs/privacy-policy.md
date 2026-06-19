@@ -6,11 +6,16 @@ this is written in plain words on purpose. if anything here is unclear, ask us: 
 
 ## the short version
 
-you are anonymous to everyone else on unsaid, always. you are not anonymous to the database — we hold exactly one identifier (the email or apple id you sign in with) so that your account can exist, be protected from abuse, and be deleted. we never show it to anyone, we never sell anything, and when you delete your account it is really gone.
+you are anonymous to everyone else on unsaid, always. how anonymous you are to the database depends on how you get in:
+
+- **slip in anonymously (the default):** we hold **no identifier at all** — no email, no name, nothing. your account is just a random id with no way to tie it back to you. the trade-off is that if you lose this device or clear the app, that account (and its posts) can't be recovered.
+- **email magic link (optional):** we hold **one** identifier — the email you sign in with — purely so you can get back in on another device. we never show it to anyone, never attach it to your posts, and never sell or market with it.
+
+either way, we never sell anything, and when you delete your account it is really gone.
 
 ## what we collect
 
-- **an auth identifier.** the email address you use for the magic link, or the token apple gives us if you sign in with apple. that's how you get back in. it is never shown to other users, never attached to your posts in anything anyone can read, and never used for marketing.
+- **an auth identifier — only if you choose email.** if you sign in with a magic link, we hold that email address so you can get back in. if you slip in anonymously, we hold no identifier at all. either way it is never shown to other users, never attached to your posts in anything anyone can read, and never used for marketing.
 - **what you write.** your confessions, replies, role titles (like "overthinker, 23"), mood tags, topics, saves and drafts. role titles are labels you invent — they are not checked against anything and shouldn't contain your real name (we actively warn you if it looks like they do).
 - **minimal abuse logs, briefly.** to keep the space safe we keep short-lived records: moderation decisions on content (what was blocked and why), reports you send or receive, and basic rate-limit counters. moderation logs are pruned on a short retention cycle (90 days target) and contain content verdicts, not browsing behaviour.
 - **basic technical signals.** crash reports and anonymous product analytics (which screens are slow, where people drop off). these are not tied to what you confess.
@@ -31,7 +36,7 @@ a role title you chose, a mood, the words you wrote, and counts. that's it. ther
 
 ## the honest part: lawful requests
 
-if a court or law-enforcement agency with proper jurisdiction legally compels us, the most we *can* hand over is: your auth identifier (an email address), your content, and timestamps. we cannot hand over what we never had — there is no real-name record, no phone number, no location trail. we will push back on overbroad requests and will be transparent about the requests we receive wherever the law allows.
+if a court or law-enforcement agency with proper jurisdiction legally compels us, the most we *can* hand over is: your auth identifier **if you have one** (an email — anonymous accounts have none), your content, and timestamps. we cannot hand over what we never had — there is no real-name record, no phone number, no location trail. we will push back on overbroad requests and will be transparent about the requests we receive wherever the law allows.
 
 ## deletion really deletes
 

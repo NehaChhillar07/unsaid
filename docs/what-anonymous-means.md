@@ -10,15 +10,18 @@ we use the word carefully. here is exactly what it means on unsaid — and what 
 - reactions are anonymous too. when you tap "felt this", the author learns a number went up — never who.
 - when you mute someone, we resolve who they are on the server. you never learn it, and they never learn you muted them.
 
-## anonymous to us: almost, and we're honest about the gap
+## anonymous to us: it depends how you got in, and we're honest about it
 
-to make accounts work at all, we hold one piece of identity: the email address (or apple sign-in token) you used to get in. that gives us three abilities, and we want you to know all three:
+- **if you slipped in anonymously** (the default way in), we hold **no identity at all** — no email, no name, no token. your account is a random id and nothing more. the catch: lose the device and that account can't be recovered.
+- **if you used an email magic link**, we hold exactly one piece of identity: that email. nothing else.
 
-- we can let you back into your account.
+an email (when you choose it) gives us three abilities, and we want you to know all three:
+
+- we can let you back into your account on a new device.
 - we can stop a banned person from endlessly returning.
 - we can delete everything when you ask.
 
-what we *can't* do matters more: we can't show anyone who you are, we hold no real name, no phone number, no location. inside the product, your authorship is structurally hidden — the public data views that power every feed simply do not contain the author column. it's not a policy promise; the query physically cannot return it.
+what we *can't* do matters more, and it's true for every account however you signed in: we can't show anyone who you are, we hold no real name, no phone number, no location. inside the product, your authorship is structurally hidden — the public data views that power every feed simply do not contain the author column. it's not a policy promise; the query physically cannot return it.
 
 ## the limits, plainly
 

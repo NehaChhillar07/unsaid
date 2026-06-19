@@ -107,6 +107,30 @@ export function react(sb: UnsaidClient, postId: string, type: ReactionType): Pro
   return invoke(sb, 'react', { post_id: postId, type });
 }
 
+/**
+ * The caller's own reactions for a set of posts — used to seed the feed so
+ * returning users see correct felt state (no inverted toggle on reload).
+ * RLS limits this to the caller's own rows; nothing about other users leaks.
+ */
+export async function fetchMyReactions(
+  sb: UnsaidClient,
+  postIds: string[],
+): Promise<Record<string, ReactionType>> {
+  if (!postIds.length) return {};
+  const { data: u } = await sb.auth.getUser();
+  if (!u.user) return {};
+  const { data, error } = await sb
+    .from('reactions')
+    .select('post_id, type')
+    .in('post_id', postIds);
+  if (error) throw error;
+  const out: Record<string, ReactionType> = {};
+  for (const r of (data ?? []) as { post_id: string; type: ReactionType }[]) {
+    out[r.post_id] = r.type;
+  }
+  return out;
+}
+
 export function report(
   sb: UnsaidClient,
   target: { type: 'post' | 'comment'; id: string },

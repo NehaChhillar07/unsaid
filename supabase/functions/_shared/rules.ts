@@ -36,11 +36,46 @@ export interface RuleHit {
   rx: RegExp;
 }
 
-const NAMED_COMPANIES =
-  /\b(google|meta|facebook|instagram|amazon|infosys|tcs|tata consultancy|deloitte|kpmg|microsoft|apple|wipro|accenture|flipkart|swiggy|zomato|paytm|phonepe|netflix|uber|ola|goldman sachs|jp ?morgan|morgan stanley|mckinsey|bcg|bain|ey|pwc|ibm|adobe|salesforce|oracle|sap|zoho|byju'?s|oyo|razorpay|cred|zerodha|freshworks|cognizant|capgemini|hcl|tech mahindra|reliance|jio|airtel)\b/i;
+// Company detection is the #1 false-positive source: many brand names are also
+// everyday words (apple, meta, cred, ola, sap, ey, bain, oracle, reliance, jio)
+// and even distinctive ones double as verbs ("google it"). So in post BODIES we
+// only flag a company when it sits in an employment/affiliation CONTEXT, never bare.
+//
+// Two tiers:
+//  - DISTINCTIVE: rarely innocent as a bare word, flagged after a light context
+//    (`at`/`@`/`work(ed/ing) at|for`/`joined`/`employed`/`intern`/`hired`/`job at`).
+//  - AMBIGUOUS: common English words; flagged ONLY after a strong work verb, so
+//    "apple of my eye" / "good at apple picking" / "for apple pie" all pass.
+const DISTINCTIVE_COMPANIES = [
+  'google', 'facebook', 'instagram', 'amazon', 'infosys', 'tcs', 'tata consultancy',
+  'deloitte', 'kpmg', 'microsoft', 'wipro', 'accenture', 'flipkart', 'swiggy', 'zomato',
+  'paytm', 'phonepe', 'netflix', 'uber', 'goldman sachs', 'jp ?morgan', 'morgan stanley',
+  'mckinsey', 'pwc', 'ibm', 'adobe', 'salesforce', 'zoho', "byju'?s", 'oyo', 'razorpay',
+  'zerodha', 'freshworks', 'cognizant', 'capgemini', 'hcl', 'tech mahindra', 'airtel',
+];
+const AMBIGUOUS_COMPANIES = [
+  'apple', 'meta', 'ola', 'sap', 'cred', 'ey', 'bain', 'oracle', 'reliance', 'jio', 'bcg',
+];
+
+// light context for distinctive brands
+const DISTINCTIVE_CTX =
+  '(?:at|@|joined|(?:works?|worked|working|employed|interning|intern|hired)\\s+(?:at|for|by|with)|job\\s+(?:at|with))';
+// strong work-only context for common-word brands
+const AMBIGUOUS_CTX =
+  '(?:works?|worked|working|employed|interning|intern|hired|job)\\s+(?:at|for|by|with)';
+const ARTICLE = '(?:a |an |the )?';
+
+const COMPANY_DISTINCTIVE_RX = new RegExp(
+  `\\b${DISTINCTIVE_CTX}\\s+${ARTICLE}(?:${DISTINCTIVE_COMPANIES.join('|')})\\b`,
+  'i',
+);
+const COMPANY_AMBIGUOUS_RX = new RegExp(
+  `\\b${AMBIGUOUS_CTX}\\s+${ARTICLE}(?:${AMBIGUOUS_COMPANIES.join('|')})\\b`,
+  'i',
+);
 
 const NAMED_CITIES =
-  /\b(gurgaon|gurugram|bangalore|bengaluru|mumbai|delhi|new delhi|noida|pune|hyderabad|chennai|kolkata|ahmedabad|jaipur|chandigarh|kochi|indore|lucknow|seattle|london|sf|san francisco|nyc|new york|austin|boston|chicago|toronto|berlin|amsterdam|dubai|singapore|sydney)\b/i;
+  /\b(gurgaon|gurugram|bangalore|bengaluru|mumbai|delhi|new delhi|noida|pune|hyderabad|chennai|kolkata|ahmedabad|jaipur|chandigarh|kochi|indore|lucknow|seattle|london|san francisco|nyc|new york|toronto|berlin|amsterdam|dubai|singapore|sydney)\b/i;
 
 // Indian mobile (+91 optional, starts 6-9, 10 digits) or generic intl number.
 const PHONE_RX = /(\+91[\s-]?)?\b[6-9]\d{9}\b|\+\d{10,13}\b/;
@@ -49,24 +84,48 @@ const EMAIL_RX = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
 
 const MY_NAME_RX = /\bmy name('?s| is)\s+[a-z]+/i;
 
-// Capitalized first name immediately tied to a workplace/location preposition:
-// "Rahul at Google", "Priya from Deloitte".
-const NAME_AT_PLACE_RX = /\b[A-Z][a-z]{2,}\s+(at|from|in)\s+[A-Z][A-Za-z]+/;
+// "<Name> at/from <Company>" — anchored to a KNOWN company so ordinary
+// "Monday at Office" / "Yesterday in Therapy" no longer match, AND the leading
+// word must be genuinely Capitalized in the source (a real name). We can't use a
+// case-sensitive [A-Z] anchor together with case-insensitive company matching in
+// one flagged regex, so the capitalization is verified in code below.
+const NAME_AT_COMPANY_RX = new RegExp(
+  `\\b([A-Za-z][a-z]{2,})\\s+(?:at|from)\\s+${ARTICLE}(?:${DISTINCTIVE_COMPANIES.join('|')}|${AMBIGUOUS_COMPANIES.join('|')})\\b`,
+  'gi',
+);
+
+function nameAtCompanyHit(text: string): boolean {
+  NAME_AT_COMPANY_RX.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = NAME_AT_COMPANY_RX.exec(text)) !== null) {
+    const name = m[1];
+    // require a real uppercase first letter (defeats "good at apple picking")
+    if (name[0] !== name[0].toLowerCase()) return true;
+  }
+  return false;
+}
 
 // Targeted guessing — calling out a specific person to readers.
 const TARGETED_RX =
   /\b(guess who|you know (exactly )?who you are|if you'?re reading this,? you know|i'?m talking about you)\b/i;
 
-/** De-anon rules applied to post/comment bodies. */
+/** De-anon rules applied to post/comment bodies (regex-based subset). */
 export const DEANON_RULES: RuleHit[] = [
-  { rule: 'deanon:company', rx: NAMED_COMPANIES },
+  { rule: 'deanon:company', rx: COMPANY_DISTINCTIVE_RX },
+  { rule: 'deanon:company', rx: COMPANY_AMBIGUOUS_RX },
   { rule: 'deanon:city', rx: NAMED_CITIES },
   { rule: 'deanon:phone', rx: PHONE_RX },
   { rule: 'deanon:email', rx: EMAIL_RX },
   { rule: 'deanon:my-name', rx: MY_NAME_RX },
-  { rule: 'deanon:name-at-place', rx: NAME_AT_PLACE_RX },
   { rule: 'deanon:targeted', rx: TARGETED_RX },
 ];
+
+// Bare company list for role titles only (short identity labels — low FP risk,
+// and role-check is advisory). Kept separate from the body tiers above.
+const ROLE_COMPANY_RX = new RegExp(
+  `\\b(?:${DISTINCTIVE_COMPANIES.join('|')}|${AMBIGUOUS_COMPANIES.join('|')})\\b`,
+  'i',
+);
 
 /**
  * De-anon rules for role titles (role-check). Stricter than bodies: the
@@ -75,14 +134,17 @@ export const DEANON_RULES: RuleHit[] = [
  */
 export const ROLE_DEANON_RULES: RuleHit[] = [
   { rule: 'deanon:at-pattern', rx: /\b(at|@)\s+\S/i },
-  { rule: 'deanon:company', rx: NAMED_COMPANIES },
+  { rule: 'deanon:company', rx: ROLE_COMPANY_RX },
   { rule: 'deanon:city', rx: NAMED_CITIES },
   { rule: 'deanon:phone', rx: PHONE_RX },
   { rule: 'deanon:email', rx: EMAIL_RX },
 ];
 
 export function deanonHits(text: string, rules: RuleHit[] = DEANON_RULES): string[] {
-  return rules.filter((r) => r.rx.test(text)).map((r) => r.rule);
+  const hits = rules.filter((r) => r.rx.test(text)).map((r) => r.rule);
+  // capitalization-aware "<Name> at <Company>" — only for post/comment bodies
+  if (rules === DEANON_RULES && nameAtCompanyHit(text)) hits.push('deanon:name-at-company');
+  return [...new Set(hits)];
 }
 
 // ── slurs / harassment blocklist ─────────────────────────────────────────────

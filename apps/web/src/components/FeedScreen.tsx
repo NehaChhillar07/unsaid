@@ -9,6 +9,7 @@ import {
   countNewSince,
   dismiss,
   fetchFeed,
+  fetchMyReactions,
   fetchSaved,
   markSeen,
   muteAuthorOf,
@@ -75,10 +76,20 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       );
       if (!personal || !professional) return;
       const seenHere = committedIds.current;
-      setFeeds({
+      const nextFeeds = {
         personal: personal.posts.filter((p) => !seenHere.has(p.id)),
         professional: professional.posts.filter((p) => !seenHere.has(p.id)),
-      });
+      };
+      setFeeds(nextFeeds);
+      // seed felt/none state from the server so returning users don't see an
+      // inverted toggle (preserve any optimistic taps already made this session).
+      const ids = [...nextFeeds.personal, ...nextFeeds.professional].map((p) => p.id);
+      try {
+        const mine = await fetchMyReactions(sb, ids);
+        setReactions((r) => ({ ...mine, ...r }));
+      } catch {
+        // read-back is best-effort; feed still works without it
+      }
     } catch {
       // keep what we have
     }

@@ -23,8 +23,10 @@ const PUBLIC_VIEWS = ['feed_posts', 'post_comments', 'saved_posts'];
 
 /** extract the body of `create ... view <name> as <body>;` (last definition wins) */
 function viewBody(name) {
+  // matches plain AND materialized views (a future `create materialized view`
+  // must not slip past this guard)
   const re = new RegExp(
-    `create\\s+(?:or\\s+replace\\s+)?view\\s+(?:public\\.)?${name}\\b[\\s\\S]*?;`,
+    `create\\s+(?:or\\s+replace\\s+)?(?:materialized\\s+)?view\\s+(?:public\\.)?${name}\\b[\\s\\S]*?;`,
     'gi',
   );
   const matches = sql.match(re);

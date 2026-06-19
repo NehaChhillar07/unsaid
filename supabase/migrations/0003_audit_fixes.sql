@@ -5,13 +5,15 @@
 --      one identity surface, regardless of client
 
 -- ── #5 reports: one report per (target, reporter) ─────────────────────────────
--- dedup any pre-existing duplicates first (keep the earliest), then enforce.
+-- dedup any pre-existing duplicates first, then enforce. ctid (not created_at)
+-- is the tiebreaker so identical-timestamp duplicates are still collapsed and
+-- the unique index below can never fail to build.
 delete from public.reports r
 using public.reports keep
 where r.target_type = keep.target_type
   and r.target_id   = keep.target_id
   and r.reporter_id = keep.reporter_id
-  and r.created_at   > keep.created_at;
+  and r.ctid        > keep.ctid;
 
 create unique index if not exists reports_unique_reporter
   on public.reports (target_type, target_id, reporter_id);

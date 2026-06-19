@@ -40,7 +40,7 @@ if a court or law-enforcement agency with proper jurisdiction legally compels us
 
 ## deletion really deletes
 
-deleting your account (in the app: you → anonymity & data → delete account) hard-deletes your posts, replies, reactions, saves, drafts, identities and profile rows, revokes the apple sign-in token if you used one, and deletes the auth user. gone means gone. we do not keep a shadow copy. backups age out on a fixed short cycle.
+deleting your account (in your space → delete account & wipe everything) hard-deletes your posts, replies, reactions, saves, drafts, identities and profile rows, and deletes the auth user. gone means gone. we do not keep a shadow copy. backups age out on a fixed short cycle.
 
 deleting a single post hard-deletes it the same way, along with its replies and reactions.
 

@@ -74,8 +74,10 @@ const COMPANY_AMBIGUOUS_RX = new RegExp(
   'i',
 );
 
+// "austin" intentionally omitted (collides with the common first name);
+// sf/boston/chicago kept — distinctive enough as whole words.
 const NAMED_CITIES =
-  /\b(gurgaon|gurugram|bangalore|bengaluru|mumbai|delhi|new delhi|noida|pune|hyderabad|chennai|kolkata|ahmedabad|jaipur|chandigarh|kochi|indore|lucknow|seattle|london|san francisco|nyc|new york|toronto|berlin|amsterdam|dubai|singapore|sydney)\b/i;
+  /\b(gurgaon|gurugram|bangalore|bengaluru|mumbai|delhi|new delhi|noida|pune|hyderabad|chennai|kolkata|ahmedabad|jaipur|chandigarh|kochi|indore|lucknow|seattle|london|sf|san francisco|nyc|new york|boston|chicago|toronto|berlin|amsterdam|dubai|singapore|sydney)\b/i;
 
 // Indian mobile (+91 optional, starts 6-9, 10 digits) or generic intl number.
 const PHONE_RX = /(\+91[\s-]?)?\b[6-9]\d{9}\b|\+\d{10,13}\b/;

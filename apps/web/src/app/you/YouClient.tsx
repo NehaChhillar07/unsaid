@@ -23,6 +23,7 @@ import { Chrome } from '@/components/Chrome';
 import { RoleBadge } from '@/components/RoleBadge';
 import { MoodChip } from '@/components/MoodChip';
 import { ROLE_HELPER, useRoleWarning } from '@/lib/useRoleWarning';
+import { roleGuardMessage } from '@/lib/roleError';
 import styles from './you.module.css';
 
 type Seg = 'posts' | 'saved' | 'drafts';
@@ -385,8 +386,8 @@ function RoleTitlesModal({ onClose }: { onClose: () => void }) {
       await Promise.all(jobs);
       await app.refreshIdentities();
       onClose();
-    } catch {
-      setError('that didn’t stick — try again in a moment.');
+    } catch (err) {
+      setError(roleGuardMessage(err) ?? 'that didn’t stick — try again in a moment.');
       setSaving(false);
     }
   };

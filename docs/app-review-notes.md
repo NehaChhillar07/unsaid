@@ -39,7 +39,7 @@ to verify: try publishing "everyone at work is an idiot and i'll hurt them" → 
 ## 5. account deletion (guideline 5.1.1(v))
 
 - in app: **you tab → anonymity & data → delete account** → confirmation → hard delete.
-- deletes all user rows (posts, replies, reactions, saves, drafts, identities, profile), revokes the sign-in-with-apple token, and deletes the auth user. no grace-period soft delete.
+- deletes all user rows (posts, replies, reactions, saves, drafts, identities, profile) and deletes the auth user. no grace-period soft delete. (when sign-in-with-apple is added in a future native build, deletion will also revoke the Apple token per guideline 5.1.1(v).)
 
 ## 6. age gating & content rating
 

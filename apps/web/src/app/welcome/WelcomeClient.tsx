@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { WORLDS, TOPICS, type TopicId } from '@unsaid/tokens';
 import { ensureProfile, upsertIdentity } from '@unsaid/api';
+import { roleGuardMessage } from '@/lib/roleError';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useApp } from '@/components/AppContext';
 import { MaskIcon } from '@/components/MaskIcon';
@@ -67,8 +68,8 @@ export function WelcomeClient() {
       await upsertIdentity(sb, 'professional', proRole.trim(), picked);
       await app.refreshIdentities();
       router.replace('/');
-    } catch {
-      setError('that didn’t stick — give it another go in a moment.');
+    } catch (err) {
+      setError(roleGuardMessage(err) ?? 'that didn’t stick — give it another go in a moment.');
       setSaving(false);
     }
   }, [saving, personalRole, proRole, picked, app, router]);

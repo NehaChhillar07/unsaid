@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   countNewSince,
+  dismiss,
   fetchFeed,
   fetchSaved,
   markSeen,
@@ -17,6 +18,7 @@ import {
 } from '@unsaid/api';
 import type { FeedPost, Mode, ReactionType } from '@unsaid/tokens';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { prefersReducedMotion } from '@/lib/motion';
 import { useApp } from './AppContext';
 import { CardDeck } from './CardDeck';
 import { CardActionSheet, type ReportReason } from './CardActionSheet';
@@ -37,10 +39,6 @@ interface Particle {
 const MODES: Mode[] = ['personal', 'professional'];
 const NEW_DROPS_POLL_MS = 45_000;
 
-function prefersReducedMotion(): boolean {
-  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPost[]> }) {
   const app = useApp();
   const { mode } = app;
@@ -54,11 +52,10 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   const [commentsPost, setCommentsPost] = useState<FeedPost | null>(null);
   const [newCount, setNewCount] = useState(0);
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [ribbon, setRibbon] = useState(false);
+  const [glow, setGlow] = useState<{ x: number; y: number; key: number } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   const committedIds = useRef<Set<string>>(new Set());
-  const ribbonTimer = useRef(0);
   const toastTimer = useRef(0);
   // ref mirror so the new-drops poll reads fresh state without re-arming
   const feedsRef = useRef(feeds);
@@ -129,45 +126,54 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   }, [refetchFeeds, flash]);
 
   // ── reactions ────────────────────────────────────────────────
+  // subtle & warm: a soft glow blooms from the button + a few hearts drift up.
+  const PARTICLE_N = 5;
   const burst = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     if (prefersReducedMotion()) return;
     const r = e.currentTarget.getBoundingClientRect();
-    const x = r.left + r.width / 2 - 14;
-    const y = r.top - 6;
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
     const id0 = Date.now();
+    setGlow({ x: cx, y: cy, key: id0 });
+    window.setTimeout(() => setGlow((g) => (g && g.key === id0 ? null : g)), 650);
     const glyphs = ['🤍', '💗', '🩷'];
-    const ps: Particle[] = Array.from({ length: 9 }, (_, i) => ({
+    const ps: Particle[] = Array.from({ length: PARTICLE_N }, (_, i) => ({
       id: id0 + i,
-      x: x + (Math.random() * 30 - 15),
-      y: y + (Math.random() * 14 - 7),
-      dx: Math.random() * 80 - 40,
-      rot: Math.random() * 50 - 25,
-      size: 16 + Math.random() * 16,
-      dur: 1000 + Math.random() * 700,
+      x: cx - 12 + (Math.random() * 24 - 12),
+      y: r.top - 4,
+      dx: Math.random() * 56 - 28,
+      rot: Math.random() * 36 - 18,
+      size: 14 + Math.random() * 10,
+      dur: 1000 + Math.random() * 500,
       glyph: glyphs[Math.floor(Math.random() * glyphs.length)] ?? '🤍',
     }));
     setParticles((p) => [...p, ...ps]);
     window.setTimeout(() => {
-      setParticles((p) => p.filter((q) => q.id < id0 || q.id >= id0 + 9));
-    }, 1800);
+      setParticles((p) => p.filter((q) => q.id < id0 || q.id >= id0 + PARTICLE_N));
+    }, 1700);
   }, []);
 
+  // only "felt this" reacts now; "not for me" is a private dismissal (below).
   const handleReact = useCallback(
     (post: FeedPost, type: ReactionType, e?: React.MouseEvent<HTMLButtonElement>) => {
       const current = reactions[post.id] ?? null;
       const next = current === type ? null : type;
       setReactions((r) => ({ ...r, [post.id]: next }));
       if (next === 'felt' && e) burst(e);
-      if (next === 'same') {
-        setRibbon(true);
-        window.clearTimeout(ribbonTimer.current);
-        ribbonTimer.current = window.setTimeout(() => setRibbon(false), 1900);
-      }
       react(sb, post.id, type).catch(() => {
         setReactions((r) => ({ ...r, [post.id]: current }));
       });
     },
     [sb, reactions, burst],
+  );
+
+  // "not for me" — private skip: dismiss (won't recur, author never sees it).
+  const handleNotForMe = useCallback(
+    (post: FeedPost) => {
+      committedIds.current.add(post.id);
+      void dismiss(sb, post).catch(() => {});
+    },
+    [sb],
   );
 
   // ── seen tracking ────────────────────────────────────────────
@@ -266,6 +272,7 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
         mode={mode}
         reactions={reactions}
         onReact={handleReact}
+        onNotForMe={handleNotForMe}
         onReply={(post) => setCommentsPost(post)}
         onSwipeUp={(post) => setCommentsPost(post)}
         onLongPress={(post) => setActionPost(post)}
@@ -299,10 +306,15 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       {/* transient toast */}
       {toast && <div className={styles.toast}>{toast}</div>}
 
-      {/* 🫂 ribbon */}
-      <div className={`${styles.ribbon}${ribbon ? ` ${styles.ribbonOn}` : ''}`} aria-hidden={!ribbon}>
-        <span className={styles.ribbonPill}>🫂 you&rsquo;re not alone in this</span>
-      </div>
+      {/* warm glow bloom from the felt button */}
+      {glow && (
+        <div
+          key={glow.key}
+          className={styles.glow}
+          style={{ left: glow.x, top: glow.y }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* reaction burst particles */}
       <div className={styles.burstLayer} aria-hidden="true">

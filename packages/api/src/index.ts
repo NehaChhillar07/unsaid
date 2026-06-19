@@ -141,6 +141,21 @@ export async function markSeen(sb: UnsaidClient, postId: string): Promise<void> 
   );
 }
 
+/**
+ * "not for me" — a private skip. Records a dismissal (with mood/topic for future
+ * feed-tuning) and marks the post seen so it never recurs. No public count, no
+ * author notification — invisible to everyone but the user.
+ */
+export async function dismiss(sb: UnsaidClient, post: FeedPost): Promise<void> {
+  const { data: u } = await sb.auth.getUser();
+  if (!u.user) return;
+  await sb.from('dismissals').upsert(
+    { user_id: u.user.id, post_id: post.id, mood: post.mood, topic: post.topic },
+    { onConflict: 'user_id,post_id', ignoreDuplicates: true },
+  );
+  await markSeen(sb, post.id);
+}
+
 export async function toggleSave(sb: UnsaidClient, postId: string, on: boolean): Promise<void> {
   const { data: u } = await sb.auth.getUser();
   if (!u.user) return;

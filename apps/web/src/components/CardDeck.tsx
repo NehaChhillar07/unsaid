@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SWIPE, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
 import { cardVars } from '@/lib/theme';
+import { prefersReducedMotion } from '@/lib/motion';
 import { ConfessionCard } from './ConfessionCard';
 import styles from './CardDeck.module.css';
 
@@ -15,6 +16,8 @@ interface Props {
   mode: Mode;
   reactions: Record<string, ReactionType | null>;
   onReact: (post: FeedPost, type: ReactionType, e?: React.MouseEvent<HTMLButtonElement>) => void;
+  /** "not for me" — private skip: dismiss the post and advance */
+  onNotForMe: (post: FeedPost) => void;
   onReply: (post: FeedPost) => void;
   /** true while a modal is open — pauses keyboard navigation */
   paused?: boolean;
@@ -37,6 +40,7 @@ export function CardDeck({
   mode,
   reactions,
   onReact,
+  onNotForMe,
   onReply,
   paused = false,
   onCommit,
@@ -106,6 +110,36 @@ export function CardDeck({
       nextRef.current.style.opacity = '0.72';
     }
   }, []);
+
+  // "not for me" — a quiet, neutral left exit (no rotation, no celebration).
+  const dismissOff = useCallback(
+    (post: FeedPost) => {
+      const el = cardRef.current;
+      if (!el || animating.current) return;
+      animating.current = true;
+      onNotForMe(post);
+      if (onCommit) onCommit(post);
+      if (prefersReducedMotion()) {
+        if (nextRef.current) {
+          nextRef.current.style.transition = 'none';
+          nextRef.current.style.transform = 'scale(1) translateY(0px)';
+          nextRef.current.style.opacity = '1';
+        }
+        advance();
+        return;
+      }
+      el.style.transition = 'transform 0.28s ease-in, opacity 0.28s ease-in';
+      el.style.transform = `translate(${-(Math.max(window.innerWidth * 0.5, 300))}px, 0px)`;
+      el.style.opacity = '0';
+      if (nextRef.current) {
+        nextRef.current.style.transition = 'transform 0.28s ease-out, opacity 0.28s ease-out';
+        nextRef.current.style.transform = 'scale(1) translateY(0px)';
+        nextRef.current.style.opacity = '1';
+      }
+      window.setTimeout(advance, 290);
+    },
+    [advance, onCommit, onNotForMe],
+  );
 
   const goNext = useCallback(() => {
     if (index < posts.length) throwOff(1, posts[index]);
@@ -295,7 +329,7 @@ export function CardDeck({
               mode={mode}
               reacted={reactions[post.id] ?? null}
               onFelt={(e) => onReact(post, 'felt', e)}
-              onSame={(e) => onReact(post, 'same', e)}
+              onNotForMe={() => dismissOff(post)}
               onReply={() => onReply(post)}
               onMore={onMore ? () => onMore(post) : undefined}
             />

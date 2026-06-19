@@ -77,7 +77,7 @@ export function YouClient() {
 
   const identity = app.identities?.find((i) => i.mode === mode) ?? null;
   const totalFelt = (posts ?? []).reduce((s, p) => s + p.felt_count, 0);
-  const totalSame = (posts ?? []).reduce((s, p) => s + p.same_count, 0);
+  const totalReplies = (posts ?? []).reduce((s, p) => s + p.comment_count, 0);
 
   const doDelete = useCallback(async () => {
     const target = confirmDelete;
@@ -131,7 +131,7 @@ export function YouClient() {
         {/* stats */}
         <div className={styles.stats}>
           <Stat value={formatCount(totalFelt)} label="felt received" />
-          <Stat value={formatCount(totalSame)} label="“same” received" />
+          <Stat value={formatCount(totalReplies)} label="replies received" />
           <Stat value={String(posts?.length ?? 0)} label="spills" />
         </div>
 
@@ -170,7 +170,6 @@ export function YouClient() {
                   <div className={styles.miniFoot}>
                     <span className={styles.miniCounts}>
                       <span>🤍 {formatCount(p.felt_count)}</span>
-                      <span>🫂 {formatCount(p.same_count)}</span>
                       <span>💬 {formatCount(p.comment_count)}</span>
                       {p.status !== 'live' && <span className={styles.hiddenTag}>hidden</span>}
                     </span>

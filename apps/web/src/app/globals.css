@@ -212,6 +212,21 @@ html[data-theme='dark'] .themed {
   }
 }
 
+/* warm bloom behind the "felt this" tap — grows + fades from the button */
+@keyframes glowBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
 /* full-viewport variant: prototype clipped to 1180px inside a phone frame;
    on the open web we clip to 160vmax so the reveal always covers the screen. */
 @keyframes worldReveal {

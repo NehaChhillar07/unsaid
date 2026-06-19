@@ -92,35 +92,22 @@
   text-align: center;
 }
 
-/* "you're not alone" ribbon */
-.ribbon {
+/* warm glow bloom from the felt button */
+.glow {
   position: fixed;
-  left: 0;
-  right: 0;
-  top: calc(72px + env(safe-area-inset-top));
-  display: flex;
-  justify-content: center;
-  z-index: 51;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-12px);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.ribbonOn {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.ribbonPill {
-  padding: 9px 18px;
+  width: 220px;
+  height: 220px;
+  margin: -110px 0 0 -110px;
   border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-family: var(--font-ui);
-  font-size: 13.5px;
-  font-weight: 600;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  z-index: 69;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 85%, transparent) 0%,
+    transparent 60%
+  );
+  animation: glowBloom 0.62s ease-out forwards;
 }
 
 /* reaction burst */

@@ -72,6 +72,7 @@ function SignedOutLanding({ feeds }: Props) {
           mode={mode}
           reactions={NO_REACTIONS}
           onReact={handleReact}
+          onNotForMe={handleReact}
           onReply={handleReply}
           paused={app.signInOpen || !!app.compose}
         />

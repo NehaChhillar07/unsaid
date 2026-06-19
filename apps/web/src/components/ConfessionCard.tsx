@@ -15,39 +15,11 @@ interface Props {
   reacted?: ReactionType | null;
   interactive?: boolean;
   onFelt?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onSame?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** "not for me" — private skip; advances + dismisses */
+  onNotForMe?: () => void;
   onReply?: () => void;
   /** opens the save / report / mute action sheet (signed-in feed) */
   onMore?: () => void;
-}
-
-function ReactStat({
-  glyph,
-  label,
-  count,
-  active,
-  onClick,
-}: {
-  glyph: string;
-  label: string;
-  count: number;
-  active: boolean;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-}) {
-  const cls = `${styles.reactBtn}${active ? ` ${styles.reactActive}` : ''}`;
-  const inner = (
-    <>
-      <span className={styles.reactGlyph}>{glyph}</span>
-      <span className={styles.reactLabel}>{label}</span>
-      <span className={styles.reactCount}>{formatCount(count)}</span>
-    </>
-  );
-  if (!onClick) return <div className={cls}>{inner}</div>;
-  return (
-    <button type="button" className={cls} onClick={onClick} aria-pressed={active}>
-      {inner}
-    </button>
-  );
 }
 
 export function ConfessionCard({
@@ -56,10 +28,12 @@ export function ConfessionCard({
   reacted = null,
   interactive = true,
   onFelt,
-  onSame,
+  onNotForMe,
   onReply,
   onMore,
 }: Props) {
+  const feltActive = reacted === 'felt';
+  const feltCount = post.felt_count + (feltActive ? 1 : 0);
   const replyLabel = `${formatCount(post.comment_count)} ${post.comment_count === 1 ? 'reply' : 'replies'}`;
   return (
     <article className={styles.card} style={cardVars(mode, post.id)}>
@@ -91,20 +65,33 @@ export function ConfessionCard({
         <div className={styles.replyRow}>{replyLabel}</div>
       )}
       <div className={styles.reactions}>
-        <ReactStat
-          glyph="🤍"
-          label="felt this"
-          count={post.felt_count + (reacted === 'felt' ? 1 : 0)}
-          active={reacted === 'felt'}
-          onClick={interactive ? onFelt : undefined}
-        />
-        <ReactStat
-          glyph="🫂"
-          label="same"
-          count={post.same_count + (reacted === 'same' ? 1 : 0)}
-          active={reacted === 'same'}
-          onClick={interactive ? onSame : undefined}
-        />
+        {/* left — quiet private skip, no count, never shown to the author */}
+        {interactive && onNotForMe ? (
+          <button type="button" className={styles.skipBtn} onClick={onNotForMe}>
+            not for me
+          </button>
+        ) : (
+          <div className={styles.skipBtn}>not for me</div>
+        )}
+        {/* right — the one warm, public, counted reaction */}
+        {interactive && onFelt ? (
+          <button
+            type="button"
+            className={`${styles.feltBtn}${feltActive ? ` ${styles.feltActive}` : ''}`}
+            onClick={onFelt}
+            aria-pressed={feltActive}
+          >
+            <span className={styles.feltGlyph}>🤍</span>
+            <span className={styles.feltLabel}>felt this</span>
+            <span className={styles.feltCount}>{formatCount(feltCount)}</span>
+          </button>
+        ) : (
+          <div className={`${styles.feltBtn}${feltActive ? ` ${styles.feltActive}` : ''}`}>
+            <span className={styles.feltGlyph}>🤍</span>
+            <span className={styles.feltLabel}>felt this</span>
+            <span className={styles.feltCount}>{formatCount(feltCount)}</span>
+          </div>
+        )}
       </div>
     </article>
   );

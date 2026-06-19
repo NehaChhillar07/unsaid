@@ -59,7 +59,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const role = post?.role_title ?? 'a stranger';
   const mood = post?.mood ? MOODS[post.mood] : null;
   const counts = post
-    ? `🤍 ${formatCount(post.felt_count)} felt this   ·   🫂 ${formatCount(post.same_count)} same`
+    ? `🤍 ${formatCount(post.felt_count)} felt this   ·   💬 ${formatCount(post.comment_count)} replies`
     : '';
 
   return new ImageResponse(

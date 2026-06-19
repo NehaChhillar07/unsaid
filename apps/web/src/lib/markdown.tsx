@@ -18,7 +18,7 @@ export function loadDoc(name: string): string {
       // keep trying
     }
   }
-  return `# document missing\n\nwe couldn't load ${name}. write to hello@unsaid.app and we'll send it to you.`;
+  return `# document missing\n\nwe couldn't load ${name}. write to nehachhillar07@gmail.com and we'll send it to you.`;
 }
 
 function inline(text: string, keyBase: string): ReactNode[] {

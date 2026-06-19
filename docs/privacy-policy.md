@@ -2,7 +2,7 @@
 
 **unsaid** · last updated: 11 june 2026
 
-this is written in plain words on purpose. if anything here is unclear, ask us: privacy@unsaid.app.
+this is written in plain words on purpose. if anything here is unclear, ask us: nehachhillar07@gmail.com.
 
 ## the short version
 
@@ -54,8 +54,8 @@ on supabase-managed infrastructure (postgres) with row-level security. write pat
 
 ## grievance & contact
 
-- privacy questions: privacy@unsaid.app
-- grievance officer (it rules 2021): [name to be appointed], grievance@unsaid.app — acknowledgement within 24 hours, resolution within 15 days.
+- privacy questions: nehachhillar07@gmail.com
+- grievance officer (it rules 2021): Neha Chhillar, nehachhillar07@gmail.com — acknowledgement within 24 hours, resolution within 15 days.
 
 ## changes
 

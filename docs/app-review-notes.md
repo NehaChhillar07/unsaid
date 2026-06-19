@@ -33,8 +33,8 @@ to verify: try publishing "everyone at work is an idiot and i'll hurt them" → 
 
 ## 4. published contact information
 
-- safety contact: safety@unsaid.app (also shown in app: you → anonymity & data).
-- grievance officer (india it rules 2021): grievance@unsaid.app.
+- safety contact: nehachhillar07@gmail.com (also shown in app: you → anonymity & data).
+- grievance officer (india it rules 2021): Neha Chhillar, nehachhillar07@gmail.com.
 
 ## 5. account deletion (guideline 5.1.1(v))
 

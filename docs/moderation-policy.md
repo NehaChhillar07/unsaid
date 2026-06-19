@@ -43,4 +43,4 @@ doxxing or attempting to unmask anyone. sexual content involving minors (and rep
 
 ## appeals & grievance
 
-if your content was removed or your account restricted and you believe we got it wrong, write to appeals@unsaid.app from your sign-in email. per the it rules 2021 (india), our grievance officer is: **[name to be appointed]**, grievance@unsaid.app — acknowledgement within 24 hours, resolution within 15 days.
+if your content was removed or your account restricted and you believe we got it wrong, write to nehachhillar07@gmail.com from your sign-in email. per the it rules 2021 (india), our grievance officer is: **Neha Chhillar**, nehachhillar07@gmail.com — acknowledgement within 24 hours, resolution within 15 days.

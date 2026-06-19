@@ -1,0 +1,7 @@
+# the iOS app is not deployed to the web; keep the upload lean.
+# packages/* MUST stay — the web app imports them via transpilePackages.
+apps/mobile
+**/.expo
+**/node_modules
+.git
+supabase/.temp

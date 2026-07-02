@@ -6,18 +6,18 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
   overscroll-behavior: none;
 }
 
-/* desktop floating spill button — hidden on phones (tab bar has it) */
+/* desktop spill button — hidden on phones (the tab bar carries it there).
+   sits in-flow right beneath the card so the toggle, card and spill read as
+   one tight, balanced group rather than the button drifting to the floor. */
 .spillBtn {
-  position: fixed;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 60;
   display: none;
+  align-self: center;
+  margin-top: 0;
+  z-index: 2;
   align-items: center;
   gap: 9px;
   padding: 14px 24px;
@@ -38,7 +38,7 @@
 }
 
 .spillBtn:active {
-  transform: translateX(-50%) scale(0.94);
+  transform: scale(0.94);
 }
 
 /* new drops pill */
@@ -92,37 +92,17 @@
   text-align: center;
 }
 
-/* warm glow bloom from the felt button */
-.glow {
-  position: fixed;
-  width: 220px;
-  height: 220px;
-  margin: -110px 0 0 -110px;
-  border-radius: 999px;
-  pointer-events: none;
-  z-index: 69;
-  mix-blend-mode: soft-light;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--accent) 85%, transparent) 0%,
-    transparent 60%
-  );
-  animation: glowBloom 0.62s ease-out forwards;
-}
 
-/* reaction burst */
-.burstLayer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 70;
-  overflow: visible;
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.spillBtn {
+  transition: transform 0.16s, box-shadow 0.2s, filter 0.2s;
 }
-
-.particle {
-  position: absolute;
-  animation-name: floatUp;
-  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
-  animation-fill-mode: forwards;
-  will-change: transform, opacity;
+@media (hover: hover) and (pointer: fine) {
+  .spillBtn:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow: 0 16px 34px color-mix(in srgb, var(--accent) 48%, transparent);
+  }
+  .newDrops:hover { cursor: pointer; filter: brightness(1.07); }
 }

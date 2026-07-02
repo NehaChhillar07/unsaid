@@ -147,7 +147,7 @@
 }
 
 .helperWarn {
-  color: #d9694c;
+  color: var(--danger);
 }
 
 .topics {
@@ -179,17 +179,7 @@
 .topicChipOn {
   background: var(--ink-ambient);
   border-color: transparent;
-  color: #fff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .topicChipOn {
-    color: #2d1a26;
-  }
-}
-
-:global(html[data-theme='dark']) .topicChipOn {
-  color: #2d1a26;
+  color: var(--ink-on-ambient);
 }
 
 .topicGlyph {
@@ -214,7 +204,7 @@
   text-align: center;
   font-family: var(--font-ui);
   font-size: 12.5px;
-  color: #d9694c;
+  color: var(--danger);
 }
 
 .primaryBtn {
@@ -222,7 +212,7 @@
   height: 56px;
   border-radius: 18px;
   background: var(--ink-ambient);
-  color: #fff;
+  color: var(--ink-on-ambient);
   font-family: var(--font-ui);
   font-size: 16.5px;
   font-weight: 600;
@@ -230,16 +220,6 @@
   box-shadow: 0 10px 28px rgba(59, 51, 43, 0.22);
   transition: transform 0.12s, opacity 0.2s;
   touch-action: manipulation;
-}
-
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .primaryBtn {
-    color: #2d1a26;
-  }
-}
-
-:global(html[data-theme='dark']) .primaryBtn {
-  color: #2d1a26;
 }
 
 .primaryBtn:active {
@@ -260,4 +240,26 @@
   font-family: var(--font-ui);
   font-size: 14px;
   color: var(--ink-soft);
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.primaryBtn {
+  transition: transform 0.16s, opacity 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .topicChip:not(.topicChipOn):hover {
+    cursor: pointer;
+    background: var(--surface-solid);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-border));
+    transform: translateY(-1px);
+  }
+  .topicChipOn:hover { cursor: pointer; filter: brightness(1.1); }
+  .primaryBtn:not(:disabled):hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow: 0 14px 32px rgba(59, 51, 43, 0.28);
+  }
+  .backBtn:hover { cursor: pointer; color: var(--ink-ambient); }
 }

@@ -27,6 +27,13 @@
   --card-grad: var(--card-grad-dark);
 }
 
+/* entry "threshold" scenes force dark cards regardless of the user's theme.
+   the per-card pair is set on .card itself, so this override must live on
+   .card too (an ancestor scope is shadowed). see globals.css [data-threshold]. */
+:global([data-threshold='dark']) .card {
+  --card-grad: var(--card-grad-dark);
+}
+
 /* soft linear sheen across the top-right corner */
 .sheen {
   position: absolute;
@@ -59,8 +66,9 @@
 }
 
 .moreBtn {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
+  position: relative;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -95,6 +103,18 @@
   padding: 16px 0;
   position: relative;
   z-index: 2;
+}
+
+/* fixed-size (deck) cards: the body fills the card and clips rather than
+   growing the card; the font is stepped down by length so it still fits. */
+.uniform {
+  height: 100%;
+}
+
+.uniform .body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .text {
@@ -204,6 +224,56 @@ button.feltBtn:active {
   line-height: 1;
 }
 
+/* ── "felt this" engagement — red heart beats, button flashes a red shadow,
+   and hearts fly up across the whole SCREEN (rendered in a body portal). ── */
+.feltGlyphBeat {
+  animation: feltHeartbeat 0.5s ease;
+}
+
+/* red shadow that pops up under the button while the hearts fly */
+.feltGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  animation: feltGlowPop 0.75s ease-out forwards;
+}
+
+@keyframes feltHeartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.45);
+  }
+  55% {
+    transform: scale(0.9);
+  }
+}
+
+@keyframes feltGlowPop {
+  0% {
+    box-shadow: 0 4px 8px 0 rgba(229, 57, 53, 0);
+  }
+  35% {
+    box-shadow: 0 10px 34px 3px rgba(229, 57, 53, 0.6);
+  }
+  100% {
+    box-shadow: 0 6px 22px 0 rgba(229, 57, 53, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feltGlyphBeat,
+  .feltGlow {
+    animation: none;
+  }
+  .feltGlow {
+    display: none;
+  }
+}
+
 .feltLabel {
   font-family: var(--font-ui);
   font-size: 14px;
@@ -216,4 +286,152 @@ button.feltBtn:active {
   font-size: 13px;
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
+}
+
+/* ── full-screen red-heart celebration (portaled to document.body, anchored at
+   the button's screen position; each heart sprays up and fades) ── */
+.screenHearts {
+  position: fixed;
+  z-index: 200;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.screenHeart {
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 1;
+  opacity: 0;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 10px rgba(229, 57, 53, 0.55));
+  animation-name: feltScreenHeart;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes feltScreenHeart {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.3);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--x1, 0px)), -24px) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x2, 0px)), var(--rise, -200px)) scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screenHearts {
+    display: none;
+  }
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+@media (hover: hover) and (pointer: fine) {
+  button.moreBtn:hover { cursor: pointer; color: var(--ink-ambient); background: color-mix(in srgb, var(--ink-ambient) 9%, transparent); }
+  button.replyRow:hover { cursor: pointer; color: var(--ink-ambient); }
+  button.skipBtn:hover { cursor: pointer; background: color-mix(in srgb, var(--ink-ambient) 8%, transparent); }
+  button.feltBtn:hover { cursor: pointer; transform: translateY(-1px); }
+}
+
+
+/* soft warm bloom under the heart spray — one cohesive celebration, GPU-only
+   (transform + opacity), anchored at the felt button's screen position. */
+.burstGlow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 200px;
+  margin: -104px 0 0 -100px;
+  border-radius: 999px;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  will-change: transform, opacity;
+  background: radial-gradient(circle, rgba(229, 57, 53, 0.62) 0%, transparent 62%);
+  animation: feltBurstGlow 0.66s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes feltBurstGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  28% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+/* ── save / bookmark (card header) ── */
+.saveBtn {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--badge-bg);
+  color: var(--ink-soft);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: color 0.2s, background 0.2s, transform 0.14s;
+  touch-action: manipulation;
+}
+
+button.saveBtn {
+  cursor: pointer;
+}
+
+button.saveBtn:active {
+  transform: scale(0.9);
+}
+
+.saveBtnOn {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) var(--accent-mix, 16%), transparent);
+}
+
+.saveGlyph {
+  display: inline-flex;
+}
+
+.saveBtnOn .saveGlyph {
+  animation: savePop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes savePop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saveBtnOn .saveGlyph { animation: none; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.saveBtn:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+}
+
+/* expand the small card-header icons' tap area to ~44px without enlarging them */
+.moreBtn::after,
+.saveBtn::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
 }

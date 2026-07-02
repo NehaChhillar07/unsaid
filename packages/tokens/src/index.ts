@@ -7,7 +7,11 @@ export type MoodKey =
   | 'lonely' | 'relieved' | 'scared' | 'proud';
 export type TopicId =
   | 'work' | 'family' | 'love' | 'money'
-  | 'self' | 'lonely' | 'wins' | 'future';
+  | 'self' | 'lonely' | 'wins' | 'future'
+  | 'anxiety' | 'heartbreak' | 'grief' | 'burnout'
+  | 'friends' | 'healing' | 'body' | 'masking'
+  | 'home' | 'worth' | 'sleep' | 'faith'
+  | 'parenting' | 'change';
 
 export interface World {
   key: Mode;
@@ -105,9 +109,23 @@ export const TOPICS: Topic[] = [
   { id: 'lonely', label: 'loneliness',    glyph: '🌙' },
   { id: 'wins',   label: 'small wins',    glyph: '🌟' },
   { id: 'future', label: 'the future',    glyph: '🌅' },
+  { id: 'anxiety',    label: 'anxiety',             glyph: '💭' },
+  { id: 'heartbreak', label: 'heartbreak',          glyph: '💔' },
+  { id: 'grief',      label: 'grief',               glyph: '🕯️' },
+  { id: 'burnout',    label: 'burnout',             glyph: '🔋' },
+  { id: 'friends',    label: 'friendships',         glyph: '🫂' },
+  { id: 'healing',    label: 'healing',             glyph: '🌱' },
+  { id: 'body',       label: 'my body',             glyph: '🪷' },
+  { id: 'masking',    label: "pretending i'm fine", glyph: '🎭' },
+  { id: 'home',       label: 'homesickness',        glyph: '🧳' },
+  { id: 'worth',      label: 'feeling not enough',  glyph: '🪶' },
+  { id: 'sleep',      label: "can't sleep",         glyph: '🌃' },
+  { id: 'faith',      label: 'faith & doubt',       glyph: '✨' },
+  { id: 'parenting',  label: 'parenting',           glyph: '🍼' },
+  { id: 'change',     label: 'change',              glyph: '🍃' },
 ];
 
-export const POST_MAX_CHARS = 500;
+export const POST_MAX_CHARS = 280;
 export const COMMENT_MAX_CHARS = 280;
 export const FELT_MILESTONES = [1, 10, 50, 100, 500, 1000] as const;
 
@@ -151,6 +169,20 @@ export function worldBgCss(world: Mode, dark: boolean): string {
   const [a, b, c] = dark ? w.bgDark : w.bgLight;
   return `linear-gradient(${w.bgAngle}deg, ${a} 0%, ${b} 52%, ${c} 100%)`;
 }
+
+// ── threshold scenes (intro · explore · welcome) ──────────────
+// the entry build spec's dark "threshold" palette. these three scenes stay
+// dark regardless of the user's light/dark theme — cream text on warm-black.
+// single source for the scene gradients + cream values used by the entry CSS
+// and the components that render inside them.
+export const THRESHOLD = {
+  introBg: 'radial-gradient(125% 120% at 50% 32%, #241D18 0%, #1A1512 54%, #110D0B 100%)',
+  exploreBg: 'radial-gradient(130% 120% at 50% 10%, #221C18 0%, #1A1512 52%, #110D0B 100%)',
+  welcomeBg: 'radial-gradient(120% 120% at 50% 38%, #221C18 0%, #1A1512 52%, #120E0C 100%)',
+  cream: '#F1E9DF',
+  creamSoft: 'rgba(241,233,223,0.62)',
+  creamFaint: 'rgba(241,233,223,0.34)',
+} as const;
 
 export function formatCount(n: number): string {
   if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace('.0', '') + 'k';

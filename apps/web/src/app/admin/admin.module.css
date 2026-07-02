@@ -1,6 +1,7 @@
 /* admin — plain, fast, readable. speed over beauty. */
 
 .wrap {
+  --admin-surface: light-dark(#efebe4, #2c2823);
   max-width: 1080px;
   margin: 0 auto;
   padding: 28px 20px 60px;
@@ -68,7 +69,7 @@
 
 .table td {
   padding: 10px;
-  border-bottom: 1px solid light-dark(#efebe4, #2c2823);
+  border-bottom: 1px solid var(--admin-surface);
   vertical-align: top;
 }
 
@@ -90,7 +91,7 @@
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 600;
-  background: light-dark(#efebe4, #2c2823);
+  background: var(--admin-surface);
 }
 
 .pillHidden {
@@ -120,7 +121,7 @@
   border-radius: 9px;
   font-size: 12px;
   font-weight: 600;
-  background: light-dark(#efebe4, #2c2823);
+  background: var(--admin-surface);
   transition: opacity 0.15s;
 }
 
@@ -150,7 +151,7 @@
   border-radius: 999px;
   text-decoration: none;
   font-size: 12.5px;
-  background: light-dark(#efebe4, #2c2823);
+  background: var(--admin-surface);
   opacity: 0.75;
 }
 

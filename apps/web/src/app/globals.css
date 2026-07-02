@@ -84,6 +84,8 @@ a {
   --overlay: rgba(20, 10, 18, 0.38);
   --chip-mix: 15%;
   --accent-mix: 16%;
+  --danger: #d9694c;
+  --ink-on-ambient: #fff;
   color: var(--ink-ambient);
 }
 
@@ -119,6 +121,33 @@ html[data-theme='dark'] .themed {
   --ink-ambient: var(--ink-ambient-dark);
   --world-bg: var(--world-bg-dark);
   --card-grad: var(--card-grad-dark);
+  --sheet-bg: var(--sheet-bg-dark);
+  --card-sheen: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
+  --deck-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  --glass: rgba(255, 255, 255, 0.13);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --badge-bg: rgba(255, 255, 255, 0.17);
+  --badge-bg-flat: rgba(255, 255, 255, 0.1);
+  --react-bg: rgba(255, 255, 255, 0.13);
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-solid: #201d1a;
+  --overlay: rgba(10, 6, 10, 0.55);
+  --chip-mix: 20%;
+  --accent-mix: 28%;
+}
+
+/* ── threshold scenes (intro · explore · welcome) ──────────────
+   these entry scenes stay dark regardless of the user's theme. setting
+   data-threshold="dark" on a scene wrapper forces the dark token set onto
+   that subtree (so reused cards/chrome render dark) WITHOUT touching
+   html[data-theme] — so /auth, the feed, and the theme toggle are unaffected.
+   the *-dark source vars are inherited from the nearest .themed (Chrome). */
+[data-threshold='dark'] {
+  --ink: var(--ink-dark);
+  --ink-soft: var(--ink-soft-dark);
+  --ink-ambient: var(--ink-ambient-dark);
+  --world-bg: var(--world-bg-dark);
   --sheet-bg: var(--sheet-bg-dark);
   --card-sheen: rgba(255, 255, 255, 0.05);
   --card-shadow: 0 22px 50px rgba(0, 0, 0, 0.38);
@@ -271,6 +300,145 @@ html[data-theme='dark'] .themed {
   }
 }
 
+/* ── entry-scene keyframes (ported from unsaid_BUILD_SPEC.md) ── */
+
+/* scene fade-in */
+@keyframes welScene {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* typing caret */
+@keyframes caretBlink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes riseSoft {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes markPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bubbleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes dotBreath {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.38;
+  }
+  45% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+@keyframes breatheRing {
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.24;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+/* confession fragments drifting in/out behind the welcome greeting */
+@keyframes whisperRise {
+  0% {
+    opacity: 0;
+    transform: translateY(34px);
+    filter: blur(4px);
+  }
+  22% {
+    opacity: var(--wo, 0.46);
+    filter: blur(0.5px);
+  }
+  72% {
+    opacity: var(--wo, 0.46);
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-54px);
+    filter: blur(4px);
+  }
+}
+
+/* gentle opacity breath for the welcome micro line — the MD redefines its
+   "softPulse" as opacity-only; kept separate from the scale-based softPulse
+   above (which the intro send button uses). */
+@keyframes welcomePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* intro "send" — the typed confession flows up out of the card and vanishes.
+   stays fully visible while it lifts, then accelerates up and dissolves. */
+@keyframes flyUpOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-165px) scale(0.9);
+    filter: blur(8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -279,4 +447,24 @@ html[data-theme='dark'] .themed {
     animation-delay: 0s !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+
+/* ── keyboard focus parity with the desktop hover layer ──
+   only shows for keyboard users (:focus-visible); pointer users are unaffected.
+   no global outline:none reset exists anywhere, so the ring is always reachable. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* text colour placed on ambient-ink fills (primary buttons, selected chips):
+   white on the dark fill in light mode, dark plum on the light fill in dark mode. */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) .themed {
+    --ink-on-ambient: #2d1a26;
+  }
+}
+html[data-theme='dark'] .themed {
+  --ink-on-ambient: #2d1a26;
 }

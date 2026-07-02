@@ -120,3 +120,14 @@
   text-decoration: none;
   color: var(--ink-soft);
 }
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.cta {
+  transition: transform 0.16s, filter 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover { cursor: pointer; transform: translateY(-2px); filter: brightness(1.04); }
+  .brandLink:hover { cursor: pointer; opacity: 0.82; }
+  .footer a:hover { color: var(--accent); }
+}

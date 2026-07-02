@@ -4,9 +4,8 @@
 // prototype's swipe engine (unsaid-feed.jsx): 1:1 finger tracking,
 // rotate dx*0.09 clamped ±15°, commit at 92px, spring-back otherwise.
 // plus left/right arrow buttons and keyboard arrows for the web.
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { SWIPE, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
-import { cardVars } from '@/lib/theme';
 import { prefersReducedMotion } from '@/lib/motion';
 import { ConfessionCard } from './ConfessionCard';
 import styles from './CardDeck.module.css';
@@ -29,6 +28,12 @@ interface Props {
   onLongPress?: (post: FeedPost) => void;
   /** "···" button on the active card */
   onMore?: (post: FeedPost) => void;
+  /** ids the viewer has saved — drives the header bookmark fill */
+  savedIds?: Set<string>;
+  /** one-tap save / unsave from the active card's header */
+  onToggleSave?: (post: FeedPost) => void;
+  /** custom content shown when the deck is exhausted (explore "get in quietly") */
+  caughtUpContent?: ReactNode;
 }
 
 const SPRING = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
@@ -47,6 +52,9 @@ export function CardDeck({
   onSwipeUp,
   onLongPress,
   onMore,
+  savedIds,
+  onToggleSave,
+  caughtUpContent,
 }: Props) {
   const [index, setIndex] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -87,11 +95,6 @@ export function CardDeck({
       el.style.transition = THROW;
       el.style.transform = `translate(${fly}px, ${drag.current.dy * 0.5 + dir * 8}px) rotate(${dir * (SWIPE.maxRotationDeg + 4)}deg)`;
       el.style.opacity = '0';
-      if (nextRef.current) {
-        nextRef.current.style.transition = THROW;
-        nextRef.current.style.transform = 'scale(1) translateY(0px)';
-        nextRef.current.style.opacity = '1';
-      }
       window.setTimeout(advance, 430);
     },
     [advance, onCommit],
@@ -104,11 +107,6 @@ export function CardDeck({
       el.style.transform = 'translate(0px, 0px) rotate(0deg)';
       el.style.opacity = '1';
     }
-    if (nextRef.current) {
-      nextRef.current.style.transition = SPRING;
-      nextRef.current.style.transform = 'scale(0.94) translateY(14px)';
-      nextRef.current.style.opacity = '0.72';
-    }
   }, []);
 
   // "not for me" — a quiet, neutral left exit (no rotation, no celebration).
@@ -120,23 +118,17 @@ export function CardDeck({
       onNotForMe(post);
       if (onCommit) onCommit(post);
       if (prefersReducedMotion()) {
-        if (nextRef.current) {
-          nextRef.current.style.transition = 'none';
-          nextRef.current.style.transform = 'scale(1) translateY(0px)';
-          nextRef.current.style.opacity = '1';
-        }
         advance();
         return;
       }
-      el.style.transition = 'transform 0.28s ease-in, opacity 0.28s ease-in';
-      el.style.transform = `translate(${-(Math.max(window.innerWidth * 0.5, 300))}px, 0px)`;
+      // quiet release: the card softly drifts away + down, blurs and dissolves —
+      // an exhale, not a celebration (the opposite of "felt this" blooming up).
+      el.style.transition =
+        'transform 0.42s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.42s ease, filter 0.42s ease';
+      el.style.transform = `translate(${-(Math.max(window.innerWidth * 0.42, 240))}px, 26px) scale(0.95)`;
       el.style.opacity = '0';
-      if (nextRef.current) {
-        nextRef.current.style.transition = 'transform 0.28s ease-out, opacity 0.28s ease-out';
-        nextRef.current.style.transform = 'scale(1) translateY(0px)';
-        nextRef.current.style.opacity = '1';
-      }
-      window.setTimeout(advance, 290);
+      el.style.filter = 'blur(3px)';
+      window.setTimeout(advance, 430);
     },
     [advance, onCommit, onNotForMe],
   );
@@ -177,8 +169,10 @@ export function CardDeck({
     d.lastX = e.clientX;
     d.lastT = performance.now();
     if (cardRef.current) cardRef.current.style.transition = 'none';
-    if (nextRef.current) nextRef.current.style.transition = 'none';
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // NB: do NOT capture the pointer here — capturing on pointerdown re-targets
+    // the synthesized `click` to this wrapper, so taps on the card's buttons
+    // (reply / felt / not-for-me) never fire. We capture in onPointerMove, only
+    // once a real drag begins (see below).
     // long-press → action sheet (signed-in feed)
     window.clearTimeout(pressTimer.current);
     if (onLongPress && post) {
@@ -199,9 +193,17 @@ export function CardDeck({
     if (!d.down) return;
     d.dx = e.clientX - d.startX;
     d.dy = e.clientY - d.startY;
-    if (Math.abs(d.dx) > 6 || Math.abs(d.dy) > 6) {
+    if (!d.moved && (Math.abs(d.dx) > 6 || Math.abs(d.dy) > 6)) {
       d.moved = true;
       window.clearTimeout(pressTimer.current);
+      // a real drag has started — capture the pointer now so tracking continues
+      // even if it leaves the card. (A plain tap never reaches here, so its
+      // click still lands on the button under it.)
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        /* pointer may already be released */
+      }
     }
     const now = performance.now();
     const dt = now - d.lastT;
@@ -217,11 +219,6 @@ export function CardDeck({
     );
     if (cardRef.current) {
       cardRef.current.style.transform = `translate(${d.dx.toFixed(1)}px, ${(d.dy * 0.5).toFixed(1)}px) rotate(${rot.toFixed(2)}deg)`;
-    }
-    const prog = Math.min(1, Math.abs(d.dx) / SWIPE.commitPx);
-    if (nextRef.current) {
-      nextRef.current.style.transform = `scale(${(0.94 + 0.06 * prog).toFixed(4)}) translateY(${(14 * (1 - prog)).toFixed(2)}px)`;
-      nextRef.current.style.opacity = (0.72 + 0.28 * prog).toFixed(3);
     }
   };
 
@@ -275,6 +272,9 @@ export function CardDeck({
   }
 
   if (caughtUp) {
+    if (caughtUpContent) {
+      return <div className={styles.deckZone}>{caughtUpContent}</div>;
+    }
     return (
       <div className={styles.deckZone}>
         <div className={styles.caughtUp}>
@@ -292,24 +292,10 @@ export function CardDeck({
   return (
     <div className={styles.deckZone}>
       <div className={styles.deck}>
-        {/* decorative deck silhouettes — pure visual depth */}
-        {[2, 1].map((depth) => (
-          <div
-            key={`deck-${depth}`}
-            aria-hidden="true"
-            className={styles.deckGhost}
-            style={{
-              transform: `scale(${(0.95 - depth * 0.045).toFixed(3)}) translateY(${16 + depth * 17}px)`,
-              opacity: 0.7 - depth * 0.17,
-            }}
-          >
-            <div className={styles.ghostCard} style={cardVars(mode, `${mode}-deck-${depth}`)} />
-          </div>
-        ))}
-        {/* next card peeking behind */}
+        {/* next card sits directly behind (same size), revealed as the top leaves */}
         {next && (
           <div key={`behind-${next.id}`} ref={nextRef} className={styles.nextLayer}>
-            <ConfessionCard post={next} mode={mode} interactive={false} />
+            <ConfessionCard post={next} mode={mode} interactive={false} uniform />
           </div>
         )}
         {/* active card */}
@@ -327,7 +313,10 @@ export function CardDeck({
             <ConfessionCard
               post={post}
               mode={mode}
+              uniform
               reacted={reactions[post.id] ?? null}
+              saved={savedIds?.has(post.id) ?? false}
+              onToggleSave={onToggleSave ? () => onToggleSave(post) : undefined}
               onFelt={(e) => onReact(post, 'felt', e)}
               onNotForMe={() => dismissOff(post)}
               onReply={() => onReply(post)}
@@ -335,8 +324,42 @@ export function CardDeck({
             />
           </div>
         )}
+
+        {/* desktop carousel arrows — phones keep the swipe gesture (hidden via CSS).
+            shown only on roomy, mouse-driven viewports (min-width + fine pointer). */}
+        <button
+          type="button"
+          className={`${styles.navBtn} ${styles.navPrev}`}
+          onClick={goPrev}
+          disabled={index === 0}
+          aria-label="previous confession"
+        >
+          <Chevron dir="left" />
+        </button>
+        <button
+          type="button"
+          className={`${styles.navBtn} ${styles.navNext}`}
+          onClick={goNext}
+          aria-label="next confession"
+        >
+          <Chevron dir="right" />
+        </button>
       </div>
     </div>
+  );
+}
+
+function Chevron({ dir }: { dir: 'left' | 'right' }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d={dir === 'left' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'}
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

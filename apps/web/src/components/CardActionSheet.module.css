@@ -114,7 +114,7 @@
 }
 
 .rowMuted .rowLabel {
-  color: #d9694c;
+  color: var(--danger);
 }
 
 .cancel {
@@ -138,4 +138,14 @@
   font-size: 12.5px;
   color: var(--ink-soft);
   margin: 0 4px 6px;
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.row {
+  transition: transform 0.12s, background 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .row:not(:disabled):hover { cursor: pointer; background: color-mix(in srgb, var(--ink-ambient) 7%, transparent); }
+  .cancel:hover { cursor: pointer; color: var(--ink-ambient); }
 }

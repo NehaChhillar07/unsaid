@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   transpilePackages: ['@unsaid/tokens', '@unsaid/api'],
   // allow LAN devices (e.g. phone on same Wi-Fi) to load /_next/* during dev
-  allowedDevOrigins: ['10.10.1.56'],
+  allowedDevOrigins: ['192.168.1.5'],
   // legal pages read the canonical markdown from the repo's docs/ at runtime —
   // every /legal/* route must trace docs/ or loadDoc() silently returns fallback
   outputFileTracingIncludes: {

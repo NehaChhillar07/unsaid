@@ -20,6 +20,8 @@ import type { Identity, Mode, MoodKey } from '@unsaid/tokens';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 const MODE_KEY = 'unsaid:mode';
+// per-session latch so the welcome overlay plays at most once per tab session
+const WELCOME_LATCH = 'unsaid:welcomeShown';
 
 export interface ComposeRequest {
   mode: Mode;
@@ -34,7 +36,14 @@ interface AppState {
   identities: Identity[] | null;
   /** both selves exist — posting/reacting unlocked */
   onboarded: boolean;
-  refreshIdentities: () => Promise<void>;
+  /** refetches identities; returns the rows (or null if the fetch failed) */
+  refreshIdentities: () => Promise<Identity[] | null>;
+  /** the welcome-reveal overlay request, consumed by the landing over the feed */
+  welcome: { firstTime: boolean } | null;
+  /** queue the welcome overlay (first-time: "you're in.") and latch the session */
+  triggerWelcome: (firstTime: boolean) => void;
+  /** dismiss the welcome overlay once it has played */
+  clearWelcome: () => void;
   mode: Mode;
   setMode: (m: Mode) => void;
   unread: Record<Mode, number>;
@@ -73,6 +82,8 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
   const [compose, setCompose] = useState<ComposeRequest | null>(null);
   const [signInOpen, setSignInOpen] = useState(false);
   const [feedVersion, setFeedVersion] = useState(0);
+  const [welcome, setWelcome] = useState<{ firstTime: boolean } | null>(null);
+  const welcomeLatch = useRef(false);
   const modeRef = useRef<Mode>('personal');
   modeRef.current = mode;
 
@@ -109,13 +120,15 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const refreshIdentities = useCallback(async () => {
+  const refreshIdentities = useCallback(async (): Promise<Identity[] | null> => {
     const sb = createSupabaseBrowserClient();
     try {
       const rows = await fetchIdentities(sb);
       setIdentities(rows);
+      return rows;
     } catch {
       // backend unreachable — leave as-is rather than mis-gating
+      return null;
     }
   }, []);
 
@@ -165,6 +178,40 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
     if (GATED_PATHS.has(pathname)) router.replace('/welcome');
   }, [authReady, user, identities, pathname, router]);
 
+  const triggerWelcome = useCallback((firstTime: boolean) => {
+    welcomeLatch.current = true;
+    try {
+      window.sessionStorage.setItem(WELCOME_LATCH, '1');
+    } catch {
+      /* private mode — fine, the in-memory ref still latches */
+    }
+    setWelcome({ firstTime });
+  }, []);
+
+  const clearWelcome = useCallback(() => setWelcome(null), []);
+
+  // returning user: queue the "welcome back" overlay once per session.
+  // the latch ref short-circuits re-runs (user is a fresh object each auth
+  // event); a just-onboarded user is already latched by triggerWelcome(true).
+  useEffect(() => {
+    if (!authReady || !user || !onboarded) return;
+    if (welcomeLatch.current) return;
+    let shown = false;
+    try {
+      shown = window.sessionStorage.getItem(WELCOME_LATCH) === '1';
+    } catch {
+      /* ignore */
+    }
+    welcomeLatch.current = true;
+    if (shown) return;
+    try {
+      window.sessionStorage.setItem(WELCOME_LATCH, '1');
+    } catch {
+      /* ignore */
+    }
+    setWelcome({ firstTime: false });
+  }, [authReady, user, onboarded]);
+
   const openCompose = useCallback(
     (req?: Partial<ComposeRequest>) => {
       if (!user) {
@@ -186,6 +233,13 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await createSupabaseBrowserClient().auth.signOut();
     setIdentities([]);
+    welcomeLatch.current = false;
+    setWelcome(null);
+    try {
+      window.sessionStorage.removeItem(WELCOME_LATCH);
+    } catch {
+      /* ignore */
+    }
     router.replace('/');
     router.refresh();
   }, [router]);
@@ -197,6 +251,9 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
       identities,
       onboarded,
       refreshIdentities,
+      welcome,
+      triggerWelcome,
+      clearWelcome,
       mode,
       setMode,
       unread,
@@ -212,7 +269,8 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
       signOut,
     }),
     [
-      user, authReady, identities, onboarded, refreshIdentities, mode, setMode,
+      user, authReady, identities, onboarded, refreshIdentities,
+      welcome, triggerWelcome, clearWelcome, mode, setMode,
       unread, refreshUnread, clearUnread, compose, openCompose, closeCompose,
       signInOpen, feedVersion, bumpFeed, signOut,
     ],

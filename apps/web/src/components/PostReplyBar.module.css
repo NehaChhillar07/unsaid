@@ -56,3 +56,10 @@
   color: var(--ink-soft);
   margin-bottom: 24px;
 }
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+@media (hover: hover) and (pointer: fine) {
+  .bar:hover { cursor: pointer; border-color: color-mix(in srgb, var(--accent) 35%, var(--glass-border)); }
+  .send:hover { cursor: pointer; filter: brightness(1.05); }
+}

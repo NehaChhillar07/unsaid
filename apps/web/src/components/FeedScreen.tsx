@@ -19,23 +19,11 @@ import {
 } from '@unsaid/api';
 import type { FeedPost, Mode, ReactionType } from '@unsaid/tokens';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { prefersReducedMotion } from '@/lib/motion';
 import { useApp } from './AppContext';
 import { CardDeck } from './CardDeck';
 import { CardActionSheet, type ReportReason } from './CardActionSheet';
 import { CommentsSheet } from './CommentsSheet';
 import styles from './FeedScreen.module.css';
-
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  dx: number;
-  rot: number;
-  size: number;
-  dur: number;
-  glyph: string;
-}
 
 const MODES: Mode[] = ['personal', 'professional'];
 const NEW_DROPS_POLL_MS = 45_000;
@@ -52,8 +40,6 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   const [actionBusy, setActionBusy] = useState(false);
   const [commentsPost, setCommentsPost] = useState<FeedPost | null>(null);
   const [newCount, setNewCount] = useState(0);
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [glow, setGlow] = useState<{ x: number; y: number; key: number } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   const committedIds = useRef<Set<string>>(new Set());
@@ -71,8 +57,10 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   // personalized feed (the SSR payload is the anonymous read)
   const refetchFeeds = useCallback(async () => {
     try {
+      // rank each world's opening page by the viewer's chosen topics
+      const topicsFor = (m: Mode) => app.identities?.find((i) => i.mode === m)?.topics ?? [];
       const [personal, professional] = await Promise.all(
-        MODES.map((m) => fetchFeed(sb, m, 'newest')),
+        MODES.map((m) => fetchFeed(sb, m, 'newest', null, { topics: topicsFor(m) })),
       );
       if (!personal || !professional) return;
       const seenHere = committedIds.current;
@@ -93,7 +81,7 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
     } catch {
       // keep what we have
     }
-  }, [sb]);
+  }, [sb, app.identities]);
 
   useEffect(() => {
     void refetchFeeds();
@@ -137,45 +125,21 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   }, [refetchFeeds, flash]);
 
   // ── reactions ────────────────────────────────────────────────
-  // subtle & warm: a soft glow blooms from the button + a few hearts drift up.
-  const PARTICLE_N = 5;
-  const burst = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    if (prefersReducedMotion()) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const id0 = Date.now();
-    setGlow({ x: cx, y: cy, key: id0 });
-    window.setTimeout(() => setGlow((g) => (g && g.key === id0 ? null : g)), 650);
-    const glyphs = ['🤍', '💗', '🩷'];
-    const ps: Particle[] = Array.from({ length: PARTICLE_N }, (_, i) => ({
-      id: id0 + i,
-      x: cx - 12 + (Math.random() * 24 - 12),
-      y: r.top - 4,
-      dx: Math.random() * 56 - 28,
-      rot: Math.random() * 36 - 18,
-      size: 14 + Math.random() * 10,
-      dur: 1000 + Math.random() * 500,
-      glyph: glyphs[Math.floor(Math.random() * glyphs.length)] ?? '🤍',
-    }));
-    setParticles((p) => [...p, ...ps]);
-    window.setTimeout(() => {
-      setParticles((p) => p.filter((q) => q.id < id0 || q.id >= id0 + PARTICLE_N));
-    }, 1700);
-  }, []);
+  // the "felt this" celebration is owned entirely by FeltBurstProvider — one
+  // stable, smooth animation shared by every surface. here we only toggle and
+  // persist the reaction (no second, competing burst).
 
   // only "felt this" reacts now; "not for me" is a private dismissal (below).
   const handleReact = useCallback(
-    (post: FeedPost, type: ReactionType, e?: React.MouseEvent<HTMLButtonElement>) => {
+    (post: FeedPost, type: ReactionType) => {
       const current = reactions[post.id] ?? null;
       const next = current === type ? null : type;
       setReactions((r) => ({ ...r, [post.id]: next }));
-      if (next === 'felt' && e) burst(e);
       react(sb, post.id, type).catch(() => {
         setReactions((r) => ({ ...r, [post.id]: current }));
       });
     },
-    [sb, reactions, burst],
+    [sb, reactions],
   );
 
   // "not for me" — private skip: dismiss (won't recur, author never sees it).
@@ -218,6 +182,30 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       setActionBusy(false);
     }
   }, [sb, actionPost, savedIds, flash]);
+
+  // one-tap save / unsave from the card header — optimistic, reverts on error.
+  const handleToggleSave = useCallback(
+    (post: FeedPost) => {
+      const isSaved = savedIds.has(post.id);
+      setSavedIds((s) => {
+        const n = new Set(s);
+        if (isSaved) n.delete(post.id);
+        else n.add(post.id);
+        return n;
+      });
+      flash(isSaved ? 'let go of that one' : 'kept close 🤍');
+      toggleSave(sb, post.id, !isSaved).catch(() => {
+        setSavedIds((s) => {
+          const n = new Set(s);
+          if (isSaved) n.add(post.id);
+          else n.delete(post.id);
+          return n;
+        });
+        flash('that slipped — try again in a moment');
+      });
+    },
+    [sb, savedIds, flash],
+  );
 
   const handleReport = useCallback(
     async (reason: ReportReason) => {
@@ -282,12 +270,14 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
         posts={feeds[mode]}
         mode={mode}
         reactions={reactions}
+        savedIds={savedIds}
         onReact={handleReact}
         onNotForMe={handleNotForMe}
         onReply={(post) => setCommentsPost(post)}
         onSwipeUp={(post) => setCommentsPost(post)}
         onLongPress={(post) => setActionPost(post)}
         onMore={(post) => setActionPost(post)}
+        onToggleSave={handleToggleSave}
         onCommit={handleCommit}
         paused={overlayOpen}
       />
@@ -316,36 +306,6 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
 
       {/* transient toast */}
       {toast && <div className={styles.toast}>{toast}</div>}
-
-      {/* warm glow bloom from the felt button */}
-      {glow && (
-        <div
-          key={glow.key}
-          className={styles.glow}
-          style={{ left: glow.x, top: glow.y }}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* reaction burst particles */}
-      <div className={styles.burstLayer} aria-hidden="true">
-        {particles.map((p) => (
-          <span
-            key={p.id}
-            className={styles.particle}
-            style={{
-              left: p.x,
-              top: p.y,
-              fontSize: p.size,
-              ['--dx' as string]: `${p.dx}px`,
-              ['--rot' as string]: `${p.rot}deg`,
-              animationDuration: `${p.dur}ms`,
-            }}
-          >
-            {p.glyph}
-          </span>
-        ))}
-      </div>
 
       {actionPost && (
         <CardActionSheet

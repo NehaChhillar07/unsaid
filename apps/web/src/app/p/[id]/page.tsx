@@ -9,6 +9,7 @@ import { ConfessionCard } from '@/components/ConfessionCard';
 import { RoleBadge } from '@/components/RoleBadge';
 import { MaskIcon } from '@/components/MaskIcon';
 import { PostReplyBar } from '@/components/PostReplyBar';
+import { PostSaveButton } from '@/components/PostSaveButton';
 import styles from './post.module.css';
 
 export const revalidate = 60;
@@ -68,6 +69,8 @@ export default async function PostPage({ params }: Params) {
         <div className={styles.cardWrap}>
           <ConfessionCard post={post} mode={post.mode} interactive={false} />
         </div>
+
+        <PostSaveButton post={post} />
 
         <Link href="/" className={styles.cta}>
           say yours — anonymously

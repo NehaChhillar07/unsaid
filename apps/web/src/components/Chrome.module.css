@@ -46,7 +46,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: calc(10px + env(safe-area-inset-top)) 18px 10px;
+  padding: calc(10px + env(safe-area-inset-top)) 24px 10px;
 }
 
 .brand {
@@ -67,11 +67,17 @@
   }
 }
 
-.headerToggle {
-  flex: 1;
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* the world switch sits on its own line directly under the header */
+.modeRow {
   display: flex;
   justify-content: center;
-  min-width: 0;
+  padding: 2px 24px 0;
 }
 
 .headerNav {
@@ -82,8 +88,8 @@
 
 .iconBtn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -255,4 +261,22 @@
 
 .spillTab:active {
   transform: translateY(0) scale(0.92);
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.iconBtn {
+  transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.14s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover { cursor: pointer; opacity: 0.82; }
+  .iconBtn:hover {
+    cursor: pointer;
+    color: var(--accent);
+    background: var(--surface-solid);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--glass-border));
+    transform: translateY(-1px);
+  }
+  .tabItem:hover { cursor: pointer; color: var(--accent); }
+  .spillTab:hover { cursor: pointer; transform: translateY(-1px) scale(1.02); filter: brightness(1.05); }
 }

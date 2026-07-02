@@ -85,33 +85,38 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
 
       <div className={`themed ${styles.content}`} style={worldVars(mode)}>
         {chrome && (
-          <header className={styles.header}>
-            <Link href="/" className={styles.brand} aria-label="unsaid — feed">
-              <MaskIcon size={24} color="var(--accent)" />
-              <span className={styles.brandWord}>unsaid</span>
-            </Link>
-            <div className={styles.headerToggle}>
+          <>
+            <header className={styles.header}>
+              <Link href="/" className={styles.brand} aria-label="unsaid — feed">
+                <MaskIcon size={24} color="var(--accent)" />
+                <span className={styles.brandWord}>unsaid</span>
+              </Link>
+              <div className={styles.headerRight}>
+                <ThemeToggle />
+                <nav className={styles.headerNav} aria-label="app">
+                  <Link
+                    href="/felt"
+                    className={`${styles.iconBtn}${tab === 'felt' ? ` ${styles.iconBtnOn}` : ''}`}
+                    aria-label={unread > 0 ? `felt — ${unread} unread` : 'felt'}
+                  >
+                    <BellIcon />
+                    {unread > 0 && <span className={styles.badge}>{unread > 9 ? '9+' : unread}</span>}
+                  </Link>
+                  <Link
+                    href="/you"
+                    className={`${styles.iconBtn}${tab === 'you' ? ` ${styles.iconBtnOn}` : ''}`}
+                    aria-label="your space"
+                  >
+                    <YouIcon />
+                  </Link>
+                </nav>
+              </div>
+            </header>
+            {/* world switch on its own line, directly beneath the header */}
+            <div className={styles.modeRow}>
               <ModeToggle mode={mode} onChange={app.setMode} />
             </div>
-            <ThemeToggle />
-            <nav className={styles.headerNav} aria-label="app">
-              <Link
-                href="/felt"
-                className={`${styles.iconBtn}${tab === 'felt' ? ` ${styles.iconBtnOn}` : ''}`}
-                aria-label={unread > 0 ? `felt — ${unread} unread` : 'felt'}
-              >
-                <BellIcon />
-                {unread > 0 && <span className={styles.badge}>{unread > 9 ? '9+' : unread}</span>}
-              </Link>
-              <Link
-                href="/you"
-                className={`${styles.iconBtn}${tab === 'you' ? ` ${styles.iconBtnOn}` : ''}`}
-                aria-label="your space"
-              >
-                <YouIcon />
-              </Link>
-            </nav>
-          </header>
+          </>
         )}
 
         <main className={feed ? styles.mainFeed : chrome ? styles.main : styles.mainBare}>
@@ -159,7 +164,11 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
         )}
       </div>
 
-      {app.signInOpen && <SignInModal onClose={() => app.setSignInOpen(false)} />}
+      {app.signInOpen && (
+        <div className="themed" style={worldVars(mode)}>
+          <SignInModal onClose={() => app.setSignInOpen(false)} />
+        </div>
+      )}
       {app.compose && (
         <div className="themed" style={worldVars(app.compose.mode)}>
           <ComposeModal

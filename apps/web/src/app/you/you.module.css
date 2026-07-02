@@ -167,7 +167,7 @@
 }
 
 .hiddenTag {
-  color: #d9694c;
+  color: var(--danger);
   font-weight: 600;
 }
 
@@ -175,7 +175,7 @@
   font-family: var(--font-ui);
   font-size: 12.5px;
   font-weight: 600;
-  color: #d9694c;
+  color: var(--danger);
   touch-action: manipulation;
 }
 
@@ -244,7 +244,7 @@
 }
 
 .accountDanger {
-  color: #d9694c;
+  color: var(--danger);
   font-weight: 600;
 }
 
@@ -337,7 +337,7 @@
 .sheetError {
   font-family: var(--font-ui);
   font-size: 12.5px;
-  color: #d9694c;
+  color: var(--danger);
   margin: 0 0 12px;
 }
 
@@ -428,5 +428,28 @@
 }
 
 .roleHelperWarn {
-  color: #d9694c;
+  color: var(--danger);
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.sheetConfirm {
+  transition: transform 0.16s, opacity 0.2s, filter 0.2s;
+}
+.draftCard {
+  transition: transform 0.14s, background 0.2s;
+}
+.accountRow {
+  transition: background 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .segBtn:hover { cursor: pointer; color: var(--ink-ambient); }
+  .deleteBtn:hover { cursor: pointer; color: var(--danger); }
+  .openLink:hover { cursor: pointer; color: var(--accent); }
+  .accountRow:hover { cursor: pointer; background: color-mix(in srgb, var(--ink-ambient) 6%, transparent); }
+  .accountDanger:hover { color: var(--danger); }
+  .signOut:hover { cursor: pointer; color: var(--ink-ambient); }
+  .sheetConfirm:not(:disabled):hover { cursor: pointer; transform: translateY(-2px); filter: brightness(1.04); }
+  .sheetCancel:hover { cursor: pointer; color: var(--ink-ambient); }
+  .draftCard:hover { cursor: pointer; background: var(--surface-solid); transform: translateY(-1px); }
 }

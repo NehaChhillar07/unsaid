@@ -136,7 +136,7 @@
   margin-top: 10px;
   border-radius: 14px;
   padding: 11px 14px;
-  background: color-mix(in srgb, #d9694c 12%, transparent);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
   font-family: var(--font-ui);
   font-size: 12.5px;
   line-height: 1.5;
@@ -216,7 +216,7 @@
 }
 
 .counterOver {
-  color: #d9694c;
+  color: var(--danger);
 }
 
 .sendBtn {
@@ -257,4 +257,28 @@
 .signInRow {
   font-weight: 600;
   color: var(--accent);
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.sendBtn {
+  transition: transform 0.14s, opacity 0.2s, filter 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .replyLink:hover { cursor: pointer; color: var(--accent); }
+  .sendBtn:not(:disabled):hover { cursor: pointer; transform: translateY(-1px); filter: brightness(1.05); }
+  .replyingCancel:hover { cursor: pointer; color: var(--ink-ambient); }
+}
+
+/* desktop: float as a centered card like the other sheets (not a bottom sheet) */
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+  .sheet {
+    height: min(74dvh, 720px);
+    border-radius: 28px;
+    animation: fadeIn 0.25s ease;
+  }
 }

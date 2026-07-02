@@ -7,6 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'unsaid',
     description:
       "an anonymous space for the things you can't say out loud. nobody knows it's you. everybody feels it.",
+    id: '/',
+    scope: '/',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',

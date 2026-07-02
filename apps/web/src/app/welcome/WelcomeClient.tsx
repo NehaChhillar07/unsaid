@@ -66,7 +66,15 @@ export function WelcomeClient() {
       await ensureProfile(sb);
       await upsertIdentity(sb, 'personal', personalRole.trim(), picked);
       await upsertIdentity(sb, 'professional', proRole.trim(), picked);
-      await app.refreshIdentities();
+      const rows = await app.refreshIdentities();
+      // gate-safe: only leave /welcome once both selves are confirmed — else the
+      // AppContext redirect gate would bounce us straight back here.
+      if (!rows || rows.length < 2) {
+        setError('that didn’t stick — give it another go in a moment.');
+        setSaving(false);
+        return;
+      }
+      app.triggerWelcome(false); // queue the short welcome-back over the feed
       router.replace('/');
     } catch (err) {
       setError(roleGuardMessage(err) ?? 'that didn’t stick — give it another go in a moment.');

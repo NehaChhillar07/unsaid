@@ -50,8 +50,8 @@
 .error {
   font-family: var(--font-ui);
   font-size: 13px;
-  color: #b4543c;
-  background: color-mix(in srgb, #b4543c 10%, transparent);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
   border-radius: 12px;
   padding: 10px 14px;
   margin: 0 0 14px;
@@ -118,4 +118,20 @@
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--ink-soft) 40%, transparent);
   padding-bottom: 2px;
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.submit {
+  transition: transform 0.16s, box-shadow 0.2s, filter 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .submit:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    box-shadow: 0 14px 30px rgba(59, 51, 43, 0.28);
+  }
+  .ghostLink:hover { cursor: pointer; color: var(--accent); }
+  .fineprint a:hover { color: var(--accent); }
 }

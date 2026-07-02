@@ -229,7 +229,7 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
               }}
               placeholder="say the thing you've never said…"
               autoFocus
-              maxLength={POST_MAX_CHARS + 100}
+              maxLength={POST_MAX_CHARS}
             />
             <div className={styles.moodLabel}>how does it feel? (optional)</div>
             <div className={styles.moodRow}>

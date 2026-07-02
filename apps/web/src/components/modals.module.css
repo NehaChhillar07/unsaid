@@ -13,8 +13,8 @@
   position: absolute;
   inset: 0;
   background: var(--overlay);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   animation: fadeIn 0.25s ease;
 }
 
@@ -42,6 +42,42 @@
     border-radius: 28px;
     animation: fadeIn 0.25s ease;
   }
+}
+
+/* glassmorphic variant — used by the sign-in nudge so the feed reads as a soft,
+   blurred backdrop behind a frosted card with a smooth shadow. */
+.sheetGlass {
+  background: color-mix(in srgb, var(--sheet-bg) 78%, transparent);
+  backdrop-filter: blur(30px) saturate(1.4);
+  -webkit-backdrop-filter: blur(30px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  box-shadow: 0 -22px 70px rgba(0, 0, 0, 0.55);
+}
+
+@media (min-width: 640px) {
+  .sheetGlass {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.55),
+      0 4px 18px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* brand emblem at the top of the sign-in nudge — a frosted, glowing mask badge */
+.signInEmblem {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px 0 18px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  box-shadow:
+    0 10px 28px color-mix(in srgb, var(--accent) 30%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .grabber {
@@ -309,7 +345,7 @@
 }
 
 .counterOver {
-  color: #d9694c;
+  color: var(--danger);
 }
 
 /* ── helpline panel (crisis verdict) ── */
@@ -367,4 +403,22 @@
   font-size: 20px;
   color: var(--ink-ambient);
   animation: fadeIn 0.5s ease 0.2s both;
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+.primaryBtn {
+  transition: transform 0.16s, box-shadow 0.2s, filter 0.2s;
+}
+.releaseBtn {
+  transition: opacity 0.2s, transform 0.16s, filter 0.2s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .primaryBtn:not(:disabled):hover { cursor: pointer; transform: translateY(-2px); filter: brightness(1.04); }
+  .ghostBtn:hover { cursor: pointer; color: var(--ink-ambient); }
+  .cancelBtn:hover { cursor: pointer; color: var(--ink-ambient); }
+  .releaseBtn:not(:disabled):hover { cursor: pointer; transform: translateY(-1px); filter: brightness(1.05); }
+  .moodBtn:hover { cursor: pointer; border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-border)); }
+  .helpline:hover { cursor: pointer; background: var(--surface-solid); }
+  .repliesToggle:hover { cursor: pointer; }
 }

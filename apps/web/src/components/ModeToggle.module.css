@@ -59,3 +59,9 @@
   border-radius: 999px;
   transition: opacity 0.45s ease;
 }
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+@media (hover: hover) and (pointer: fine) {
+  .opt:not(.optActive):hover { cursor: pointer; color: var(--ink-ambient); }
+}

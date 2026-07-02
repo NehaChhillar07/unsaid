@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Lora } from 'next/font/google';
 import { UnsaidAppProvider } from '@/components/AppContext';
+import { FeltBurstProvider } from '@/components/FeltBurst';
+import { PWARegister } from '@/components/PWARegister';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -43,7 +46,14 @@ export const metadata: Metadata = {
     title: 'unsaid',
   },
   icons: {
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon.ico?v=3', sizes: 'any' },
+      { url: '/icon.svg?v=3', type: 'image/svg+xml' },
+      { url: '/icon-32.png?v=3', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-16.png?v=3', type: 'image/png', sizes: '16x16' },
+    ],
+    shortcut: '/favicon.ico?v=3',
+    apple: '/apple-touch-icon.png?v=3',
   },
 };
 
@@ -70,7 +80,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <UnsaidAppProvider>{children}</UnsaidAppProvider>
+        <UnsaidAppProvider>
+          <FeltBurstProvider>{children}</FeltBurstProvider>
+        </UnsaidAppProvider>
+        <PWARegister />
+        <InstallPrompt />
       </body>
     </html>
   );

@@ -40,16 +40,66 @@ export interface FeedPage {
   nextCursor: string | null;
 }
 
+export interface FeedOptions {
+  /**
+   * The viewer's interest topics for this mode (from onboarding). When set,
+   * on-topic posts lead the opening page so the feed reflects "you'll see
+   * people who get it"; the rest fill in so the feed is never starved.
+   */
+  topics?: TopicId[];
+}
+
 /**
  * Cursor-paged feed for a mode. The feed_posts view already excludes
  * hidden/removed posts, the caller's own seen posts, and muted authors.
+ *
+ * Personalization: on the opening page (no cursor), if `topics` are supplied,
+ * posts tagged with one of those topics are ranked first, then the newest of
+ * the rest fill the remaining slots. Deeper pages stay purely chronological.
  */
 export async function fetchFeed(
   sb: UnsaidClient,
   mode: Mode,
   sort: 'newest' | 'felt',
   cursor?: string | null,
+  opts?: FeedOptions,
 ): Promise<FeedPage> {
+  const topics = (opts?.topics ?? []).filter(Boolean);
+
+  // ── personalized opening page ──
+  if (topics.length > 0 && !cursor) {
+    let leadQ = sb.from('feed_posts').select('*').eq('mode', mode).in('topic', topics).limit(FEED_PAGE);
+    leadQ =
+      sort === 'felt'
+        ? leadQ.order('felt_count', { ascending: false }).order('created_at', { ascending: false })
+        : leadQ.order('created_at', { ascending: false });
+    const { data: leadData, error: leadErr } = await leadQ;
+    if (leadErr) throw leadErr;
+    const lead = (leadData ?? []) as FeedPost[];
+
+    if (lead.length >= FEED_PAGE) {
+      const last = lead[lead.length - 1];
+      return { posts: lead, nextCursor: last ? last.created_at : null };
+    }
+
+    // fill the remaining slots with the newest of everything else
+    let restQ = sb.from('feed_posts').select('*').eq('mode', mode).limit(FEED_PAGE + lead.length);
+    restQ =
+      sort === 'felt'
+        ? restQ.order('felt_count', { ascending: false }).order('created_at', { ascending: false })
+        : restQ.order('created_at', { ascending: false });
+    const { data: restData, error: restErr } = await restQ;
+    if (restErr) throw restErr;
+    const seen = new Set(lead.map((p) => p.id));
+    const fillers = ((restData ?? []) as FeedPost[])
+      .filter((p) => !seen.has(p.id))
+      .slice(0, FEED_PAGE - lead.length);
+    const posts = [...lead, ...fillers];
+    const last = posts[posts.length - 1];
+    return { posts, nextCursor: posts.length === FEED_PAGE && last ? last.created_at : null };
+  }
+
+  // ── default chronological / felt page (also used for pagination) ──
   let q = sb.from('feed_posts').select('*').eq('mode', mode).limit(FEED_PAGE);
   if (sort === 'felt') q = q.order('felt_count', { ascending: false }).order('created_at', { ascending: false });
   else q = q.order('created_at', { ascending: false });

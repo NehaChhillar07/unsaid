@@ -2,54 +2,21 @@
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
-  padding: 8px 18px 0;
+  padding: 0 18px;
 }
 
 .deck {
   position: relative;
-  /* phone-friendly: shrink with the viewport instead of forcing scroll */
-  min-height: min(420px, 56dvh);
-  display: flex;
-  align-items: center;
-}
-
-.deckGhost {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s;
-}
-
-.ghostCard {
-  width: 100%;
-  height: 78%;
-  border-radius: 26px;
-  /* same inline-pair resolution as ConfessionCard's .card */
-  --card-grad: var(--card-grad-light);
-  background: var(--card-grad);
-  box-shadow: var(--deck-shadow);
-}
-
-@media (prefers-color-scheme: dark) {
-  :global(html:not([data-theme='light'])) .ghostCard {
-    --card-grad: var(--card-grad-dark);
-  }
-}
-
-:global(html[data-theme='dark']) .ghostCard {
-  --card-grad: var(--card-grad-dark);
+  /* fixed band so every card is the exact same size; shrinks with the viewport */
+  height: min(420px, 56dvh);
 }
 
 .nextLayer {
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
-  transform: scale(0.94) translateY(14px);
-  opacity: 0.72;
-  will-change: transform;
+  align-items: stretch;
+  opacity: 1;
   pointer-events: none;
 }
 
@@ -57,7 +24,7 @@
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   touch-action: none;
   cursor: grab;
   transform: translate(0px, 0px) rotate(0deg);
@@ -116,4 +83,65 @@
   font-family: var(--font-ui);
   font-size: 14.5px;
   font-weight: 600;
+}
+
+
+/* ── desktop carousel arrows ──────────────────────────────────────────
+   phones navigate by swiping; pointer/mouse users get explicit chevrons
+   flanking the deck. hidden by default; revealed only on wide, fine-pointer
+   viewports so touch devices never see a redundant control. */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--accent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--deck-shadow);
+  cursor: pointer;
+  transition: transform 0.16s, opacity 0.2s, background 0.2s;
+}
+
+.navPrev {
+  left: -64px;
+}
+
+.navNext {
+  right: -64px;
+}
+
+.navBtn:hover {
+  transform: translateY(-50%) scale(1.07);
+  background: var(--surface-solid);
+}
+
+.navBtn:active {
+  transform: translateY(-50%) scale(0.93);
+}
+
+.navBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+@media (min-width: 760px) and (hover: hover) and (pointer: fine) {
+  .navBtn {
+    display: inline-flex;
+  }
+}
+
+
+/* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
+@media (hover: hover) and (pointer: fine) {
+  .restartBtn:hover { cursor: pointer; background: var(--surface-solid); transform: translateY(-1px); }
 }

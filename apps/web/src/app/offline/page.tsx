@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = { title: 'offline', robots: { index: false } };
 
@@ -25,7 +26,7 @@ export default function Offline() {
         <p style={{ fontSize: 14.5, lineHeight: 1.55, opacity: 0.7, margin: '0 0 24px' }}>
           no connection right now — the feed will be here the moment you&rsquo;re back.
         </p>
-        <a
+        <Link
           href="/"
           style={{
             display: 'inline-block',
@@ -41,7 +42,7 @@ export default function Offline() {
           }}
         >
           try again
-        </a>
+        </Link>
       </div>
     </div>
   );

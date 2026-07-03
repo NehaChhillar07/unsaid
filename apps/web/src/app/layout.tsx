@@ -4,6 +4,8 @@ import { UnsaidAppProvider } from '@/components/AppContext';
 import { FeltBurstProvider } from '@/components/FeltBurst';
 import { PWARegister } from '@/components/PWARegister';
 import { InstallPrompt } from '@/components/InstallPrompt';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -85,6 +87,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </UnsaidAppProvider>
         <PWARegister />
         <InstallPrompt />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -95,6 +95,10 @@ export function CardDeck({
       el.style.transition = THROW;
       el.style.transform = `translate(${fly}px, ${drag.current.dy * 0.5 + dir * 8}px) rotate(${dir * (SWIPE.maxRotationDeg + 4)}deg)`;
       el.style.opacity = '0';
+      if (nextRef.current) {
+        nextRef.current.style.transition = 'opacity 0.22s ease';
+        nextRef.current.style.opacity = '1';
+      }
       window.setTimeout(advance, 430);
     },
     [advance, onCommit],
@@ -107,6 +111,10 @@ export function CardDeck({
       el.style.transform = 'translate(0px, 0px) rotate(0deg)';
       el.style.opacity = '1';
     }
+    if (nextRef.current) {
+      nextRef.current.style.transition = 'opacity 0.25s ease';
+      nextRef.current.style.opacity = '0';
+    }
   }, []);
 
   // "not for me" — a quiet, neutral left exit (no rotation, no celebration).
@@ -118,6 +126,7 @@ export function CardDeck({
       onNotForMe(post);
       if (onCommit) onCommit(post);
       if (prefersReducedMotion()) {
+        if (nextRef.current) nextRef.current.style.opacity = '1';
         advance();
         return;
       }
@@ -128,6 +137,10 @@ export function CardDeck({
       el.style.transform = `translate(${-(Math.max(window.innerWidth * 0.42, 240))}px, 26px) scale(0.95)`;
       el.style.opacity = '0';
       el.style.filter = 'blur(3px)';
+      if (nextRef.current) {
+        nextRef.current.style.transition = 'opacity 0.22s ease';
+        nextRef.current.style.opacity = '1';
+      }
       window.setTimeout(advance, 430);
     },
     [advance, onCommit, onNotForMe],
@@ -169,6 +182,7 @@ export function CardDeck({
     d.lastX = e.clientX;
     d.lastT = performance.now();
     if (cardRef.current) cardRef.current.style.transition = 'none';
+    if (nextRef.current) nextRef.current.style.transition = 'none';
     // NB: do NOT capture the pointer here — capturing on pointerdown re-targets
     // the synthesized `click` to this wrapper, so taps on the card's buttons
     // (reply / felt / not-for-me) never fire. We capture in onPointerMove, only
@@ -219,6 +233,9 @@ export function CardDeck({
     );
     if (cardRef.current) {
       cardRef.current.style.transform = `translate(${d.dx.toFixed(1)}px, ${(d.dy * 0.5).toFixed(1)}px) rotate(${rot.toFixed(2)}deg)`;
+    }
+    if (nextRef.current) {
+      nextRef.current.style.opacity = Math.min(1, Math.abs(d.dx) / SWIPE.commitPx).toFixed(3);
     }
   };
 

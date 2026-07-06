@@ -23,6 +23,7 @@ import { useApp } from './AppContext';
 import { CardDeck } from './CardDeck';
 import { CardActionSheet, type ReportReason } from './CardActionSheet';
 import { CommentsSheet } from './CommentsSheet';
+import { announce } from './LiveStatus';
 import styles from './FeedScreen.module.css';
 
 const MODES: Mode[] = ['personal', 'professional'];
@@ -44,12 +45,14 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
 
   const committedIds = useRef<Set<string>>(new Set());
   const toastTimer = useRef(0);
+  const announcedNew = useRef(0);
   // ref mirror so the new-drops poll reads fresh state without re-arming
   const feedsRef = useRef(feeds);
   feedsRef.current = feeds;
 
   const flash = useCallback((msg: string) => {
     setToast(msg);
+    announce(msg);
     window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(null), 2000);
   }, []);
@@ -109,6 +112,10 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       if (!newest) return;
       try {
         const n = await countNewSince(sb, mode, newest);
+        if (n > 0 && n !== announcedNew.current) {
+          announce(`${n} new ${n === 1 ? 'drop' : 'drops'} — activate the new drops button to load`);
+        }
+        announcedNew.current = n;
         setNewCount(n);
       } catch {
         // quiet
@@ -266,6 +273,7 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
 
   return (
     <div className={styles.screen}>
+      <h1 className="sr-only">unsaid — the feed</h1>
       <CardDeck
         posts={feeds[mode]}
         mode={mode}

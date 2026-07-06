@@ -53,8 +53,8 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 9px 15px 9px 13px;
-  border-radius: 999px;
+  padding: var(--pad-pill);
+  border-radius: var(--r-pill);
   background: var(--accent);
   color: #fff;
   font-family: var(--font-ui);
@@ -80,8 +80,8 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 53;
-  padding: 9px 16px;
-  border-radius: 999px;
+  padding: var(--pad-pill);
+  border-radius: var(--r-pill);
   background: var(--surface-solid);
   color: var(--ink-ambient);
   font-family: var(--font-ui);

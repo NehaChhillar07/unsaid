@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { COMMENT_MAX_CHARS, relTime, type FeedPost, type PostComment } from '@unsaid/tokens';
 import { fetchComments, publish } from '@unsaid/api';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useDialogA11y } from '@/lib/useDialogA11y';
 import { useApp } from './AppContext';
 import { RoleBadge } from './RoleBadge';
 import styles from './CommentsSheet.module.css';
@@ -32,6 +33,7 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [replyTo, setReplyTo] = useState<PostComment | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
 
   useEffect(() => {
     let on = true;
@@ -114,13 +116,22 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="replies">
       <div className={styles.scrim} onClick={onClose} />
-      <div className={styles.sheet}>
+      <div className={styles.sheet} ref={panelRef}>
         <div className={styles.grabber} />
+        <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="close replies">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          </svg>
+        </button>
         <div className={styles.title}>replies</div>
         <div className={styles.sub}>kindness only. anonymous, role-tagged, stricter rules than posts.</div>
 
         <div className={styles.list} ref={listRef}>
-          {comments === null && <div className={styles.loading}>listening…</div>}
+          {comments === null && (
+            <div className={styles.loading} role="status">
+              listening…
+            </div>
+          )}
           {comments !== null && topLevel.length === 0 && (
             <div className={styles.empty}>
               no replies yet.
@@ -144,7 +155,10 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
         </div>
 
         {notice && (
-          <div className={`${styles.notice}${notice.kind === 'crisis' ? ` ${styles.noticeCrisis}` : ''}`}>
+          <div
+            className={`${styles.notice}${notice.kind === 'crisis' ? ` ${styles.noticeCrisis}` : ''}`}
+            role="alert"
+          >
             <span>{notice.message}</span>
             {notice.kind === 'crisis' && (
               <button type="button" className={styles.noticeAction} onClick={() => void send(true)}>
@@ -180,6 +194,7 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="reply with care…"
+                aria-label="write a reply"
                 maxLength={COMMENT_MAX_CHARS + 40}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && canSend) void send(false);

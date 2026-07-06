@@ -45,7 +45,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--sp-3);
   padding: calc(10px + env(safe-area-inset-top)) 24px 10px;
 }
 
@@ -70,7 +70,7 @@
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
 }
 
 /* the world switch sits on its own line directly under the header */
@@ -83,7 +83,7 @@
 .headerNav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
 }
 
 .iconBtn {
@@ -187,7 +187,7 @@
   z-index: 60;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--sp-1);
   padding: 6px 18px calc(10px + env(safe-area-inset-bottom));
   background: linear-gradient(to top, rgba(255, 255, 255, 0.55), transparent);
   backdrop-filter: blur(14px);

@@ -128,6 +128,7 @@ export function ConfessionCard({
             <span
               key={burst}
               className={`${styles.feltGlyph}${burst ? ` ${styles.feltGlyphBeat}` : ''}`}
+              aria-hidden="true"
             >
               {felted ? '❤️' : '🤍'}
             </span>
@@ -137,7 +138,9 @@ export function ConfessionCard({
           </button>
         ) : (
           <div className={`${styles.feltBtn}${feltActive ? ` ${styles.feltActive}` : ''}`}>
-            <span className={styles.feltGlyph}>🤍</span>
+            <span className={styles.feltGlyph} aria-hidden="true">
+              🤍
+            </span>
             <span className={styles.feltLabel}>felt this</span>
             <span className={styles.feltCount}>{formatCount(feltCount)}</span>
           </div>

@@ -44,10 +44,11 @@
 }
 
 .action {
+  position: relative;
   flex-shrink: 0;
-  height: 34px;
+  height: 40px;
   padding: 0 16px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: linear-gradient(140deg, var(--accent), var(--accent-deep));
   color: #fff;
   font-family: var(--font-ui);
@@ -59,10 +60,11 @@
 }
 
 .close {
+  position: relative;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
   color: var(--ink-soft);
   font-size: 18px;
   line-height: 1;
@@ -70,6 +72,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* small visuals, full-size touch targets */
+.action::after,
+.close::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
 }
 
 @media (hover: hover) and (pointer: fine) {

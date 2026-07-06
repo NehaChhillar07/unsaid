@@ -114,8 +114,8 @@
 
 .primaryBtn {
   width: 100%;
-  height: 52px;
-  border-radius: 16px;
+  height: var(--ctl-h);
+  border-radius: var(--r-ctl);
   background: linear-gradient(140deg, var(--accent), var(--accent-deep));
   color: #fff;
   font-family: var(--font-ui);
@@ -139,8 +139,8 @@
 
 .ghostBtn {
   width: 100%;
-  height: 48px;
-  border-radius: 16px;
+  height: var(--ctl-h);
+  border-radius: var(--r-ctl);
   background: transparent;
   color: var(--ink-soft);
   font-family: var(--font-ui);
@@ -164,14 +164,19 @@
 }
 
 .cancelBtn {
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-2);
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-ui);
   font-size: 14.5px;
   color: var(--ink-soft);
 }
 
 .releaseBtn {
-  padding: 8px 16px;
-  border-radius: 999px;
+  min-height: var(--tap-min);
+  padding: var(--pad-pill);
+  border-radius: var(--r-pill);
   font-family: var(--font-ui);
   font-size: 13.5px;
   font-weight: 700;
@@ -200,7 +205,7 @@
   width: 100%;
   min-height: 150px;
   border: none;
-  outline: none;
+  border-radius: 8px;
   resize: none;
   background: transparent;
   font-family: var(--font-confession);
@@ -225,16 +230,17 @@
 .moodRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: var(--sp-3) var(--sp-2);
   margin-bottom: 14px;
 }
 
 .moodBtn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--badge-bg-flat);
   border: 1.5px solid transparent;
   font-family: var(--font-ui);
@@ -267,6 +273,13 @@
   background: var(--tint, var(--ink-soft));
 }
 
+/* mood pills stay visually compact — extend the touch target to ~44px */
+.moodBtn::after {
+  content: '';
+  position: absolute;
+  inset: -8px 0;
+}
+
 .composeFoot {
   display: flex;
   align-items: center;
@@ -294,7 +307,8 @@
 .repliesToggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
+  min-height: var(--tap-min);
   touch-action: manipulation;
 }
 

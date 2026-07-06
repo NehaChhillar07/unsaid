@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { SWIPE, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
 import { prefersReducedMotion } from '@/lib/motion';
 import { ConfessionCard } from './ConfessionCard';
+import { announce } from './LiveStatus';
 import styles from './CardDeck.module.css';
 
 interface Props {
@@ -71,6 +72,14 @@ export function CardDeck({
   useEffect(() => {
     setIndex(0);
   }, [mode, posts]);
+
+  // tell screen readers when the visible card changes (swipe/arrows are silent)
+  const announcedIndex = useRef(0);
+  useEffect(() => {
+    if (index === announcedIndex.current) return;
+    announcedIndex.current = index;
+    if (index < posts.length) announce(`confession ${index + 1} of ${posts.length}`);
+  }, [index, posts.length]);
 
   // never leave a long-press timer behind
   useEffect(() => () => window.clearTimeout(pressTimer.current), []);
@@ -311,7 +320,7 @@ export function CardDeck({
       <div className={styles.deck}>
         {/* next card sits directly behind (same size), revealed as the top leaves */}
         {next && (
-          <div key={`behind-${next.id}`} ref={nextRef} className={styles.nextLayer}>
+          <div key={`behind-${next.id}`} ref={nextRef} className={styles.nextLayer} aria-hidden="true">
             <ConfessionCard post={next} mode={mode} interactive={false} uniform />
           </div>
         )}

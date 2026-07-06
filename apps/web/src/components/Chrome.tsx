@@ -10,6 +10,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import type { Mode } from '@unsaid/tokens';
 import { worldVars } from '@/lib/theme';
 import { useApp } from './AppContext';
+import { LiveStatus } from './LiveStatus';
 import { MaskIcon } from './MaskIcon';
 import { ModeToggle } from './ModeToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -98,6 +99,7 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
                     href="/felt"
                     className={`${styles.iconBtn}${tab === 'felt' ? ` ${styles.iconBtnOn}` : ''}`}
                     aria-label={unread > 0 ? `felt — ${unread} unread` : 'felt'}
+                    aria-current={tab === 'felt' ? 'page' : undefined}
                   >
                     <BellIcon />
                     {unread > 0 && <span className={styles.badge}>{unread > 9 ? '9+' : unread}</span>}
@@ -106,6 +108,7 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
                     href="/you"
                     className={`${styles.iconBtn}${tab === 'you' ? ` ${styles.iconBtnOn}` : ''}`}
                     aria-label="your space"
+                    aria-current={tab === 'you' ? 'page' : undefined}
                   >
                     <YouIcon />
                   </Link>
@@ -119,9 +122,13 @@ export function Chrome({ children, chrome = true, feed = false }: Props) {
           </>
         )}
 
-        <main className={feed ? styles.mainFeed : chrome ? styles.main : styles.mainBare}>
+        <main
+          id="content"
+          className={feed ? styles.mainFeed : chrome ? styles.main : styles.mainBare}
+        >
           {children}
         </main>
+        <LiveStatus />
 
         {chrome && (
           <nav className={styles.tabBar} aria-label="tabs">
@@ -202,6 +209,7 @@ function TabItem({
       type="button"
       className={`${styles.tabItem}${active ? ` ${styles.tabItemOn}` : ''}`}
       onClick={onClick}
+      aria-current={active ? 'page' : undefined}
     >
       <span className={styles.tabIcon}>
         {icon}

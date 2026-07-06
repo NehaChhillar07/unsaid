@@ -4,6 +4,7 @@
 // reason picker), and "mute this voice".
 import { useState } from 'react';
 import type { FeedPost } from '@unsaid/tokens';
+import { useDialogA11y } from '@/lib/useDialogA11y';
 import styles from './CardActionSheet.module.css';
 
 export type ReportReason = 'harassment' | 'doxxing' | 'self-harm' | 'spam' | 'other';
@@ -28,17 +29,20 @@ interface Props {
 
 export function CardActionSheet({ post, saved, busy = false, onSave, onReport, onMute, onClose }: Props) {
   const [view, setView] = useState<'menu' | 'report'>('menu');
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
 
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="card options">
       <div className={styles.scrim} onClick={busy ? undefined : onClose} />
-      <div className={styles.sheet}>
+      <div className={styles.sheet} ref={panelRef}>
         <div className={styles.grabber} />
         {view === 'menu' ? (
           <>
             <p className={styles.snippet}>&ldquo;{post.body.length > 72 ? `${post.body.slice(0, 72).trimEnd()}…` : post.body}&rdquo;</p>
             <button type="button" className={styles.row} disabled={busy} onClick={onSave}>
-              <span className={styles.rowGlyph}>🤍</span>
+              <span className={styles.rowGlyph} aria-hidden="true">
+                🤍
+              </span>
               <span className={styles.rowLabel}>{saved ? 'saved — tap to unsave' : 'save this one'}</span>
             </button>
             <button type="button" className={styles.row} disabled={busy} onClick={() => setView('report')}>

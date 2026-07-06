@@ -50,12 +50,12 @@ export function useDialogA11y<T extends HTMLElement>(onClose: () => void) {
       const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
         (el) => el.offsetParent !== null || el === document.activeElement,
       );
-      if (items.length === 0) {
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) {
         e.preventDefault();
         return;
       }
-      const first = items[0];
-      const last = items[items.length - 1];
       const active = document.activeElement;
       if (e.shiftKey) {
         if (active === first || !panel.contains(active)) {

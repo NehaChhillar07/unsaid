@@ -6,12 +6,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useDialogA11y } from '@/lib/useDialogA11y';
 import { MaskIcon } from './MaskIcon';
 import styles from './modals.module.css';
 
 export function SignInModal({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
 
   const slipIn = async () => {
     setBusy(true);
@@ -39,7 +41,7 @@ export function SignInModal({ onClose }: { onClose: () => void }) {
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="sign in">
       <div className={styles.scrim} onClick={onClose} />
-      <div className={`${styles.sheet} ${styles.sheetGlass}`}>
+      <div className={`${styles.sheet} ${styles.sheetGlass}`} ref={panelRef}>
         <div className={styles.grabber} />
         <div className={styles.signInEmblem}>
           <MaskIcon size={28} color="var(--accent)" />
@@ -52,7 +54,11 @@ export function SignInModal({ onClose }: { onClose: () => void }) {
         <button type="button" className={styles.primaryBtn} onClick={slipIn} disabled={busy}>
           {busy ? 'slipping you in…' : 'slip in anonymously'}
         </button>
-        {error && <p className={styles.copy}>{error}</p>}
+        {error && (
+          <p className={styles.copy} role="alert">
+            {error}
+          </p>
+        )}
         <Link href="/auth" className={styles.ghostBtn}>
           prefer email? get a magic link
         </Link>

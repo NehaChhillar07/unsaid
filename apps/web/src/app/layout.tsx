@@ -82,6 +82,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <a href="#content" className="skip-link">
+          skip to content
+        </a>
         <UnsaidAppProvider>
           <FeltBurstProvider>{children}</FeltBurstProvider>
         </UnsaidAppProvider>

@@ -16,6 +16,7 @@ import {
 } from '@unsaid/tokens';
 import { fetchDraft, publish, saveDraft } from '@unsaid/api';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { useDialogA11y } from '@/lib/useDialogA11y';
 import styles from './modals.module.css';
 
 type Stage = 'write' | 'sending' | 'crisis' | 'blocked' | 'released';
@@ -45,6 +46,7 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
   const touched = useRef(false); // user typed since open
   const draftTimer = useRef(0);
   const published = useRef(false);
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
 
   // load the per-mode draft on open (unless prefilled)
   useEffect(() => {
@@ -144,19 +146,23 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="spill it">
       <div className={styles.scrim} onClick={stage === 'sending' ? undefined : onClose} />
-      <div className={styles.sheet}>
+      <div className={styles.sheet} ref={panelRef}>
         <div className={styles.grabber} />
 
         {stage === 'released' && (
-          <div className={styles.released}>
-            <span className={styles.releasedPlane}>✈️</span>
+          <div className={styles.released} role="status">
+            <span className={styles.releasedPlane} aria-hidden="true">
+              ✈️
+            </span>
             <div className={styles.releasedText}>released into the feed 🤍</div>
           </div>
         )}
 
         {stage === 'crisis' && (
-          <>
-            <div style={{ fontSize: 30, marginBottom: 14 }}>🤍</div>
+          <div role="alert">
+            <div style={{ fontSize: 30, marginBottom: 14 }} aria-hidden="true">
+              🤍
+            </div>
             <h2 className={styles.title}>it sounds like you&rsquo;re carrying something really heavy right now.</h2>
             <p className={styles.copy}>
               you deserve someone real on the other end. these people are kind, free, and ready to
@@ -180,11 +186,11 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
             <button type="button" className={styles.ghostBtn} onClick={() => void release(true)}>
               it&rsquo;s just a feeling — release it anyway
             </button>
-          </>
+          </div>
         )}
 
         {stage === 'blocked' && (
-          <>
+          <div role="alert">
             <h2 className={styles.title}>this one can&rsquo;t go out as written.</h2>
             <p className={styles.copy}>
               {blockedMsg ??
@@ -196,7 +202,7 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
             <button type="button" className={styles.ghostBtn} onClick={onClose}>
               let it go for now
             </button>
-          </>
+          </div>
         )}
 
         {(stage === 'write' || stage === 'sending') && (
@@ -228,6 +234,7 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
                 setText(e.target.value);
               }}
               placeholder="say the thing you've never said…"
+              aria-label="your confession"
               autoFocus
               maxLength={POST_MAX_CHARS}
             />
@@ -242,12 +249,13 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
                     type="button"
                     className={`${styles.moodBtn}${on ? ` ${styles.moodBtnOn}` : ''}`}
                     style={{ '--tint': m.tint } as CSSProperties}
+                    aria-pressed={on}
                     onClick={() => {
                       touched.current = true;
                       setMood(on ? null : mk);
                     }}
                   >
-                    <span className={styles.moodDot} />
+                    <span className={styles.moodDot} aria-hidden="true" />
                     {m.label}
                   </button>
                 );
@@ -268,6 +276,8 @@ export function ComposeModal({ mode, onClose, initialBody, initialMood, onPublis
               </button>
               <span
                 className={`${styles.counter}${over ? ` ${styles.counterOver}` : remaining < 60 ? ` ${styles.counterWarn}` : ''}`}
+                role={remaining < 20 ? 'status' : undefined}
+                aria-label={`${remaining} characters left`}
               >
                 {remaining}
               </span>

@@ -46,7 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--sp-2);
   position: relative;
   z-index: 2;
 }
@@ -54,14 +54,14 @@
 .headLeft {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--sp-2);
   min-width: 0;
 }
 
 .headRight {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--sp-2);
   flex-shrink: 0;
 }
 
@@ -157,7 +157,7 @@ button.replyRow {
 .reactions {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: var(--sp-2);
   position: relative;
   z-index: 2;
 }

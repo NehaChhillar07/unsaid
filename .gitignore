@@ -12,3 +12,6 @@ supabase/.temp/
 ios/
 android/
 .vercel
+
+# typescript incremental build state
+apps/web/tsconfig.tsbuildinfo

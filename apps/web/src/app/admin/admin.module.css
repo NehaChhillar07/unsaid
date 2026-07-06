@@ -88,7 +88,7 @@
 .pill {
   display: inline-block;
   padding: 2px 9px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   font-size: 11.5px;
   font-weight: 600;
   background: var(--admin-surface);
@@ -174,7 +174,7 @@
 
 .statCard {
   flex: 1 1 180px;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   padding: 16px 18px;
   background: light-dark(#f4f0ea, #26221d);
 }

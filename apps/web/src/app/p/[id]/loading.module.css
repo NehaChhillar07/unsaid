@@ -29,7 +29,7 @@
 .card {
   width: 100%;
   height: 280px;
-  border-radius: 26px;
+  border-radius: var(--r-card);
   background: var(--card-grad-light);
   box-shadow: var(--card-shadow);
   animation: pulseSoft 1.4s ease-in-out infinite;

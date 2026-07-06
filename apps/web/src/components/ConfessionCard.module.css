@@ -3,7 +3,7 @@
 
 .card {
   width: 100%;
-  border-radius: 26px;
+  border-radius: var(--r-card);
   /* the gradient pair is set inline on this element (cardVars), so the
      light/dark resolution must happen here too — resolving it on the
      ancestor .themed scope can't see these vars and computes transparent. */
@@ -69,7 +69,7 @@
   width: 34px;
   height: 34px;
   position: relative;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -169,7 +169,7 @@ button.replyRow {
   align-items: center;
   justify-content: center;
   padding: 0 18px;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   background: transparent;
   border: 1.5px solid var(--glass-border);
   font-family: var(--font-ui);
@@ -197,7 +197,7 @@ button.skipBtn:active {
   justify-content: center;
   gap: 8px;
   padding: 13px 6px;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   background: var(--react-bg);
   border: 1.5px solid transparent;
   position: relative;
@@ -234,7 +234,7 @@ button.feltBtn:active {
 .feltGlow {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   pointer-events: none;
   animation: feltGlowPop 0.75s ease-out forwards;
 }
@@ -351,7 +351,7 @@ button.feltBtn:active {
   width: 200px;
   height: 200px;
   margin: -104px 0 0 -100px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   pointer-events: none;
   mix-blend-mode: soft-light;
   will-change: transform, opacity;
@@ -378,7 +378,7 @@ button.feltBtn:active {
   width: 34px;
   height: 34px;
   position: relative;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   display: inline-flex;
   align-items: center;
   justify-content: center;

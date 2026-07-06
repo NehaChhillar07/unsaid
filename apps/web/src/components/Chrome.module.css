@@ -92,7 +92,7 @@
   position: relative;
   width: 44px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -127,7 +127,7 @@
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--accent);
   color: #fff;
   box-sizing: border-box;

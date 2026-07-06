@@ -12,7 +12,7 @@
 .orbTop,
 .orbBottom {
   position: absolute;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
   filter: blur(6px);
   pointer-events: none;
@@ -53,7 +53,7 @@
 .dot {
   width: 7px;
   height: 7px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--ink-ambient) 20%, transparent);
   transition: width 0.3s;
 }
@@ -95,7 +95,7 @@
 .worldDot {
   width: 9px;
   height: 9px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   flex-shrink: 0;
 }
 

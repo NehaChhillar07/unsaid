@@ -5,7 +5,7 @@
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   padding: 4px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   position: relative;
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -19,7 +19,7 @@
   top: 4px;
   bottom: 4px;
   width: calc(50% - 4px);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   /* selected side carries the world's accent with a soft spreading glow;
      --accent morphs with the active world, so the color crossfades too */
   background: linear-gradient(140deg, var(--accent), var(--accent-deep));
@@ -40,7 +40,7 @@
   justify-content: center;
   gap: 6px;
   padding: var(--pad-pill);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   font-family: var(--font-ui);
   font-size: 13.5px;
   font-weight: 500;
@@ -68,7 +68,7 @@
 .dot {
   width: 7px;
   height: 7px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   transition: opacity 0.45s ease;
 }
 

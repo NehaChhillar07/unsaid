@@ -11,7 +11,7 @@
   width: 100%;
   max-width: 420px;
   background: var(--surface);
-  border-radius: 28px;
+  border-radius: var(--r-sheet);
   padding: 34px 30px 30px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -66,10 +66,10 @@
 }
 
 .input {
-  height: 52px;
+  height: var(--ctl-h);
   border: none;
   outline: none;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   padding: 0 18px;
   background: var(--surface-solid);
   color: var(--ink-ambient);

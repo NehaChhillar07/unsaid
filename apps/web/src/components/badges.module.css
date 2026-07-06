@@ -5,7 +5,7 @@
   align-items: center;
   gap: 6px;
   padding: 5px 11px 5px 9px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--badge-bg);
   color: var(--ink);
   font-family: var(--font-ui);
@@ -37,7 +37,7 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--tint) var(--chip-mix, 15%), transparent);
   color: var(--tint);
   font-family: var(--font-ui);
@@ -59,7 +59,7 @@
 .moodDot {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--tint);
   flex-shrink: 0;
 }

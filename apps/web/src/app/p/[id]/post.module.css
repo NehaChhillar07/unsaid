@@ -34,8 +34,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 52px;
-  border-radius: 16px;
+  height: var(--ctl-h);
+  border-radius: var(--r-ctl);
   background: linear-gradient(140deg, var(--accent), var(--accent-deep));
   color: #fff;
   font-family: var(--font-ui);

@@ -77,7 +77,7 @@
 
 .restartBtn {
   padding: 13px 24px;
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   background: var(--glass);
   color: var(--ink-ambient);
   font-family: var(--font-ui);
@@ -97,7 +97,7 @@
   z-index: 5;
   width: 46px;
   height: 46px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   display: none;
   align-items: center;
   justify-content: center;

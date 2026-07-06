@@ -23,7 +23,7 @@
   width: 100%;
   max-width: 480px;
   background: var(--sheet-bg);
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
   padding: 12px 18px calc(20px + env(safe-area-inset-bottom));
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
   animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
@@ -38,7 +38,7 @@
     padding: 24px;
   }
   .sheet {
-    border-radius: 28px;
+    border-radius: var(--r-sheet);
     animation: fadeIn 0.22s ease;
   }
 }
@@ -46,7 +46,7 @@
 .grabber {
   width: 38px;
   height: 5px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--ink-soft);
   opacity: 0.4;
   margin: 0 auto 6px;
@@ -75,7 +75,7 @@
   width: 100%;
   text-align: left;
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   padding: 14px 16px;
   color: var(--ink-ambient);
   transition: transform 0.12s;

@@ -25,7 +25,7 @@
   max-height: 88dvh;
   overflow-y: auto;
   background: var(--sheet-bg);
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
   padding: 26px 24px 30px;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
   animation: sheetUp 0.36s cubic-bezier(0.16, 1, 0.3, 1);
@@ -39,7 +39,7 @@
     padding: 24px;
   }
   .sheet {
-    border-radius: 28px;
+    border-radius: var(--r-sheet);
     animation: fadeIn 0.25s ease;
   }
 }
@@ -83,7 +83,7 @@
 .grabber {
   width: 38px;
   height: 5px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--ink-soft);
   opacity: 0.4;
   margin: 0 auto 16px;
@@ -269,7 +269,7 @@
 .moodDot {
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--tint, var(--ink-soft));
 }
 
@@ -321,7 +321,7 @@
 .switchTrack {
   width: 38px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 2px;
   box-sizing: border-box;
   background: color-mix(in srgb, var(--ink-soft) 38%, transparent);
@@ -336,7 +336,7 @@
 .switchThumb {
   width: 18px;
   height: 18px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: #fff;
   transform: translateX(0);
   transition: transform 0.2s;
@@ -376,7 +376,7 @@
   align-items: center;
   justify-content: space-between;
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: var(--r-ctl);
   padding: 14px 16px;
   text-decoration: none;
 }

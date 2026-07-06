@@ -27,7 +27,7 @@ export default async function AuthPage({
 
   return (
     <div className={`themed ${styles.page}`} style={worldVars('personal')}>
-      <div className={styles.panel}>
+      <main className={styles.panel}>
         <Link href="/" className={styles.brand}>
           <MaskIcon size={22} color="var(--accent)" />
           unsaid
@@ -55,7 +55,11 @@ export default async function AuthPage({
               or drop an email for a magic link — handy if you ever switch phones and want your
               spills back.
             </p>
-            {error && <p className={styles.error}>{error}</p>}
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
             <form action={sendMagicLink} className={styles.form}>
               <input
                 type="email"
@@ -63,6 +67,7 @@ export default async function AuthPage({
                 required
                 autoComplete="email"
                 placeholder="you@somewhere.quiet"
+                aria-label="your email"
                 className={styles.input}
               />
               <button type="submit" className={styles.submit}>
@@ -75,7 +80,7 @@ export default async function AuthPage({
             </p>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }

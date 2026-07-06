@@ -3,10 +3,10 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  height: 40px;
+  height: var(--tap-min);
   padding: 0 18px;
-  margin-bottom: 22px;
-  border-radius: 999px;
+  margin-bottom: var(--sp-6);
+  border-radius: var(--r-pill);
   background: var(--glass);
   border: 1.5px solid var(--glass-border);
   color: var(--ink-soft);

@@ -117,7 +117,8 @@
 }
 
 .actionBtn {
-  padding: 5px 10px;
+  min-height: 36px;
+  padding: 8px 14px;
   border-radius: 9px;
   font-size: 12px;
   font-weight: 600;
@@ -147,8 +148,11 @@
 }
 
 .filterRow a {
-  padding: 5px 12px;
-  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
   text-decoration: none;
   font-size: 12.5px;
   background: var(--admin-surface);

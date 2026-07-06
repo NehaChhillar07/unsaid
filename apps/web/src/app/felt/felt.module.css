@@ -28,7 +28,7 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--sp-3);
 }
 
 .quiet {
@@ -51,7 +51,7 @@
 
 .row {
   display: flex;
-  gap: 13px;
+  gap: var(--sp-3);
   align-items: flex-start;
   background: var(--surface);
   border-radius: 20px;

@@ -24,6 +24,7 @@ import { RoleBadge } from '@/components/RoleBadge';
 import { MoodChip } from '@/components/MoodChip';
 import { ROLE_HELPER, useRoleWarning } from '@/lib/useRoleWarning';
 import { roleGuardMessage } from '@/lib/roleError';
+import { useDialogA11y } from '@/lib/useDialogA11y';
 import styles from './you.module.css';
 
 type Seg = 'posts' | 'saved' | 'drafts';
@@ -137,13 +138,12 @@ export function YouClient() {
         </div>
 
         {/* segments */}
-        <div className={styles.segs} role="tablist" aria-label="your things">
+        <div className={styles.segs} role="group" aria-label="your things">
           {(['posts', 'saved', 'drafts'] as Seg[]).map((s) => (
             <button
               key={s}
               type="button"
-              role="tab"
-              aria-selected={seg === s}
+              aria-pressed={seg === s}
               className={`${styles.segBtn}${seg === s ? ` ${styles.segOn}` : ''}`}
               onClick={() => setSeg(s)}
             >
@@ -337,10 +337,11 @@ function ConfirmSheet({
   onConfirm: () => void;
   onClose: () => void;
 }) {
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
   return (
     <div className={styles.overlay} role="alertdialog" aria-modal="true" aria-label={title}>
       <div className={styles.scrim} onClick={busy ? undefined : onClose} />
-      <div className={styles.sheet}>
+      <div className={styles.sheet} ref={panelRef}>
         <h2 className={styles.sheetTitle}>{title}</h2>
         <p className={styles.sheetCopy}>{copy}</p>
         <button
@@ -399,37 +400,47 @@ function RoleTitlesModal({ onClose }: { onClose: () => void }) {
     warning: string | null,
   ) => (
     <div className={styles.roleFieldWrap}>
-      <div className={styles.roleFieldLabel}>
+      <label className={styles.roleFieldLabel} htmlFor={`role-${mode}`}>
         <span
           className={styles.roleDot}
           style={{ background: mode === 'personal' ? '#B06A48' : '#5A7388' }}
+          aria-hidden="true"
         />
         {mode} self
-      </div>
+      </label>
       <input
+        id={`role-${mode}`}
         className={`${styles.roleInput}${warning ? ` ${styles.roleInputWarn}` : ''}`}
         value={value}
         onChange={(e) => set(e.target.value)}
         maxLength={48}
         placeholder={mode === 'personal' ? 'eldest daughter, 24' : 'intern at a big4'}
       />
-      <div className={`${styles.roleHelper}${warning ? ` ${styles.roleHelperWarn}` : ''}`}>
+      <div
+        className={`${styles.roleHelper}${warning ? ` ${styles.roleHelperWarn}` : ''}`}
+        role={warning ? 'alert' : undefined}
+      >
         {warning ?? ROLE_HELPER}
       </div>
     </div>
   );
 
+  const panelRef = useDialogA11y<HTMLDivElement>(onClose);
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="change your role titles">
       <div className={styles.scrim} onClick={saving ? undefined : onClose} />
-      <div className={styles.sheet}>
+      <div className={styles.sheet} ref={panelRef}>
         <h2 className={styles.sheetTitle}>change your role titles</h2>
         <p className={styles.sheetCopy}>
           old posts get the new title too — a role is a mood, not a record.
         </p>
         {field('personal', personalRole, setPersonalRole, personalWarning)}
         {field('professional', proRole, setProRole, proWarning)}
-        {error && <p className={styles.sheetError}>{error}</p>}
+        {error && (
+          <p className={styles.sheetError} role="alert">
+            {error}
+          </p>
+        )}
         <button
           type="button"
           className={styles.sheetConfirm}

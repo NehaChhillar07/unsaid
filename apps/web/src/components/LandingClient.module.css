@@ -57,9 +57,9 @@
 .storeBadge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 999px;
+  gap: var(--sp-2);
+  padding: var(--pad-pill);
+  border-radius: var(--r-pill);
   background: var(--glass);
   border: 1px solid var(--glass-border);
   color: var(--ink-soft);

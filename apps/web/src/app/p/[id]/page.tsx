@@ -60,7 +60,8 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <div className={`themed ${styles.page}`} style={worldVars(post.mode)}>
-      <div className={styles.column}>
+      <main className={styles.column}>
+        <h1 className="sr-only">a confession left unsaid</h1>
         <Link href="/" className={styles.brandLink}>
           <MaskIcon size={18} color="var(--accent)" />
           unsaid
@@ -104,7 +105,7 @@ export default async function PostPage({ params }: Params) {
           <span aria-hidden="true">·</span>
           <Link href="/legal/anonymous">what anonymous means here</Link>
         </footer>
-      </div>
+      </main>
     </div>
   );
 }

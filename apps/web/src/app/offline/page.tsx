@@ -30,8 +30,8 @@ export default function Offline() {
           href="/"
           style={{
             display: 'inline-block',
-            height: 50,
-            lineHeight: '50px',
+            height: 52,
+            lineHeight: '52px',
             padding: '0 26px',
             borderRadius: 16,
             background: '#B06A48',

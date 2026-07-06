@@ -204,6 +204,7 @@ export function IntroHero({ onDone }: { onDone: (confession?: string) => void })
               ref={inputRef}
               value={userText}
               onChange={(e) => setUserText(e.target.value)}
+              aria-label="say the thing you've never said"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {

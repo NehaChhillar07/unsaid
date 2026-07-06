@@ -114,6 +114,7 @@ export function WelcomeClient() {
               onChange={setPersonalRole}
               placeholder="eldest daughter, 24"
               warning={personalWarning}
+              label="your personal role"
             />
 
             <div className={styles.worldLabel} style={{ marginTop: 14 }}>
@@ -125,6 +126,7 @@ export function WelcomeClient() {
               onChange={setProRole}
               placeholder="intern at a big4"
               warning={proWarning}
+              label="your professional role"
             />
 
             <div className={styles.foot}>
@@ -165,7 +167,11 @@ export function WelcomeClient() {
               <div className={styles.counterLine}>
                 {left > 0 ? `pick ${left} more` : 'a feed is already waiting for you'}
               </div>
-              {error && <div className={styles.error}>{error}</div>}
+              {error && (
+                <div className={styles.error} role="alert">
+                  {error}
+                </div>
+              )}
               <button
                 type="button"
                 className={styles.primaryBtn}
@@ -190,11 +196,13 @@ function RoleField({
   onChange,
   placeholder,
   warning,
+  label,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   warning: string | null;
+  label: string;
 }) {
   return (
     <div className={styles.fieldWrap}>
@@ -205,10 +213,14 @@ function RoleField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          aria-label={label}
           maxLength={48}
         />
       </div>
-      <div className={`${styles.helper}${warning ? ` ${styles.helperWarn}` : ''}`}>
+      <div
+        className={`${styles.helper}${warning ? ` ${styles.helperWarn}` : ''}`}
+        role={warning ? 'alert' : undefined}
+      >
         {warning ?? ROLE_HELPER}
       </div>
     </div>

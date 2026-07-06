@@ -92,6 +92,15 @@ export function WelcomeBack({ variant, onDone }: { variant: WelcomeVariant; onDo
     <div
       data-threshold="dark"
       onClick={finish}
+      role="button"
+      tabIndex={0}
+      aria-label="continue to the feed"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          finish();
+        }
+      }}
       style={{
         position: 'fixed',
         inset: 0,

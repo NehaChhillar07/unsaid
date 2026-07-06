@@ -8,14 +8,13 @@ const OPTS: Mode[] = ['personal', 'professional'];
 
 export function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) {
   return (
-    <div className={styles.toggle} role="tablist" aria-label="world">
+    <div className={styles.toggle} role="group" aria-label="world">
       <div className={styles.thumb} style={{ left: mode === 'personal' ? 4 : 'calc(50%)' }} />
       {OPTS.map((key) => (
         <button
           key={key}
           type="button"
-          role="tab"
-          aria-selected={mode === key}
+          aria-pressed={mode === key}
           className={`${styles.opt}${mode === key ? ` ${styles.optActive}` : ''}`}
           onClick={() => onChange(key)}
         >

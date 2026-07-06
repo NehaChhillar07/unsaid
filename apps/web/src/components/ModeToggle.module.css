@@ -1,5 +1,9 @@
 .toggle {
-  display: inline-flex;
+  /* equal halves — auto-columns:1fr sizes both options to the widest label,
+     so the 50%-wide thumb lines up with the real button edges */
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   padding: 4px;
   border-radius: 999px;
   position: relative;
@@ -33,14 +37,22 @@
   z-index: 2;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: var(--pad-pill);
   border-radius: 999px;
   font-family: var(--font-ui);
   font-size: 13.5px;
   font-weight: 500;
   color: var(--ink-soft);
   transition: color 0.45s ease;
+}
+
+/* the visual pill stays compact — extend the touch target to 44px */
+.opt::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
 }
 
 .optActive {

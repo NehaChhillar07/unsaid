@@ -181,7 +181,7 @@ export const THRESHOLD = {
   welcomeBg: 'radial-gradient(120% 120% at 50% 38%, #221C18 0%, #1A1512 52%, #120E0C 100%)',
   cream: '#F1E9DF',
   creamSoft: 'rgba(241,233,223,0.62)',
-  creamFaint: 'rgba(241,233,223,0.34)',
+  creamFaint: 'rgba(241,233,223,0.55)',
 } as const;
 
 export function formatCount(n: number): string {

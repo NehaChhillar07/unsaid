@@ -30,7 +30,7 @@ export function worldVars(mode: Mode): CSSProperties {
     '--ink-light': w.ink,
     '--ink-dark': '#fff',
     '--ink-ambient-dark': w.inkDark,
-    '--ink-soft-light': hexToRgba(w.ink, 0.6),
+    '--ink-soft-light': hexToRgba(w.ink, 0.72),
     '--ink-soft-dark': 'rgba(255,255,255,0.72)',
     '--sheet-bg-light': SHEET_BG[mode][0],
     '--sheet-bg-dark': SHEET_BG[mode][1],

@@ -41,10 +41,12 @@
   transform: scale(0.94);
 }
 
-/* new drops pill */
+/* new drops pill — anchored to the top of the feed area (.screen) so it
+   always lands just below the header + world toggle instead of guessing
+   their combined height with a viewport offset */
 .newDrops {
-  position: fixed;
-  top: calc(72px + env(safe-area-inset-top));
+  position: absolute;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 52;
@@ -71,10 +73,10 @@
   animation: softPulse 1.4s ease-in-out infinite;
 }
 
-/* transient toast */
+/* transient toast — same anchor as the new-drops pill */
 .toast {
-  position: fixed;
-  top: calc(72px + env(safe-area-inset-top));
+  position: absolute;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 53;

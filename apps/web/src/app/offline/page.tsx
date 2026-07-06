@@ -34,7 +34,7 @@ export default function Offline() {
             lineHeight: '52px',
             padding: '0 26px',
             borderRadius: 16,
-            background: '#B06A48',
+            background: '#9C5A3C',
             color: '#fff',
             fontSize: 15,
             fontWeight: 600,

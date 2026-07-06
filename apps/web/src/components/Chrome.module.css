@@ -53,6 +53,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 10px 8px;
+  margin: -10px -8px;
   text-decoration: none;
   color: var(--ink-ambient);
   font-family: var(--font-ui);

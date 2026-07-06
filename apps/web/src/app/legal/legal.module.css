@@ -22,7 +22,8 @@
   font-weight: 700;
   color: var(--ink-ambient);
   text-decoration: none;
-  margin-bottom: 30px;
+  padding: 11px 8px;
+  margin: -11px -8px 19px;
 }
 
 .doc h1 {

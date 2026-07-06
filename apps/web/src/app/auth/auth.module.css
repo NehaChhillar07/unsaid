@@ -27,7 +27,8 @@
   font-weight: 700;
   color: var(--ink-ambient);
   text-decoration: none;
-  margin-bottom: 22px;
+  padding: 11px 8px;
+  margin: -11px -8px 11px;
 }
 
 .title {

@@ -28,9 +28,13 @@ export function useDialogA11y<T extends HTMLElement>(onClose: () => void) {
         ? document.activeElement
         : null;
 
-    // move focus in unless the dialog already focused something (autoFocus)
+    // move focus in unless the dialog already focused something (autoFocus).
+    // a [data-dialog-focus] element wins — destructive sheets point this at
+    // their cancel button so Enter-Enter can't confirm by accident.
     if (!panel.contains(document.activeElement)) {
-      const first = panel.querySelector<HTMLElement>(FOCUSABLE);
+      const first =
+        panel.querySelector<HTMLElement>('[data-dialog-focus]') ??
+        panel.querySelector<HTMLElement>(FOCUSABLE);
       if (first) {
         first.focus();
       } else {

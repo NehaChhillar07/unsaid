@@ -77,6 +77,7 @@
 }
 
 .segBtn {
+  position: relative;
   flex: 1;
   min-height: 40px;
   padding: 9px 0;
@@ -86,6 +87,13 @@
   font-weight: 500;
   color: var(--ink-soft);
   touch-action: manipulation;
+}
+
+/* 40px visual inside a 48px track — the hit area fills the track */
+.segBtn::after {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
 }
 
 .segOn {

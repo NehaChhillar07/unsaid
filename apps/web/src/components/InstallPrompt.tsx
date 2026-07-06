@@ -16,6 +16,23 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
+// the entry/threshold scenes own the whole viewport (and the intro carries its
+// own install pill) — the banner would cover their controls, so hold it until
+// the visitor is through. returns a cancel function.
+function showWhenClearOfThreshold(fn: () => void): () => void {
+  if (!document.querySelector('[data-threshold]')) {
+    fn();
+    return () => {};
+  }
+  const t = window.setInterval(() => {
+    if (!document.querySelector('[data-threshold]')) {
+      window.clearInterval(t);
+      fn();
+    }
+  }, 2500);
+  return () => window.clearInterval(t);
+}
+
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [ios, setIos] = useState(false);
@@ -38,18 +55,27 @@ export function InstallPrompt() {
       /iphone|ipad|ipod/i.test(ua) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+    let cancelWait = () => {};
     if (isIOS) {
       setIos(true);
-      const t = window.setTimeout(() => setShow(true), 3500);
-      return () => window.clearTimeout(t);
+      const t = window.setTimeout(() => {
+        cancelWait = showWhenClearOfThreshold(() => setShow(true));
+      }, 3500);
+      return () => {
+        window.clearTimeout(t);
+        cancelWait();
+      };
     }
     const onBIP = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
-      setShow(true);
+      cancelWait = showWhenClearOfThreshold(() => setShow(true));
     };
     window.addEventListener('beforeinstallprompt', onBIP);
-    return () => window.removeEventListener('beforeinstallprompt', onBIP);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBIP);
+      cancelWait();
+    };
   }, []);
 
   const dismiss = () => {

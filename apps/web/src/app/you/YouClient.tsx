@@ -352,7 +352,13 @@ function ConfirmSheet({
         >
           {confirmLabel}
         </button>
-        <button type="button" className={styles.sheetCancel} disabled={busy} onClick={onClose}>
+        <button
+          type="button"
+          className={styles.sheetCancel}
+          disabled={busy}
+          onClick={onClose}
+          data-dialog-focus
+        >
           never mind
         </button>
       </div>

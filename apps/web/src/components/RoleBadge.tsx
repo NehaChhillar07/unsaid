@@ -5,7 +5,7 @@ export function RoleBadge({ role, flat = false }: { role: string; flat?: boolean
   return (
     <span className={`${styles.roleBadge}${flat ? ` ${styles.flat}` : ''}`}>
       <MaskIcon size={13} />
-      {role}
+      <span className={styles.roleText}>{role}</span>
     </span>
   );
 }

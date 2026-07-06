@@ -94,6 +94,12 @@
   text-align: center;
 }
 
+/* when the new-drops pill is up, the toast slides below it instead of
+   covering the actionable control (they share the same anchor) */
+.newDrops ~ .toast {
+  top: 56px;
+}
+
 
 /* ── desktop hover states (mouse / fine-pointer only; touch keeps :active) ── */
 .spillBtn {

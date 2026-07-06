@@ -150,10 +150,32 @@ export function deanonHits(text: string, rules: RuleHit[] = DEANON_RULES): strin
 }
 
 // ── slurs / harassment blocklist ─────────────────────────────────────────────
-// TODO(before launch): extend with a vetted multilingual slur list
-// (English + Hindi/Hinglish) — sourced and reviewed, not improvised.
-// Entries are matched as whole words, case-insensitive.
-export const SLUR_BLOCKLIST: string[] = [];
+// Interim, conservative baseline of unambiguous IDENTITY-BASED hate slurs
+// (racial · ethnic · casteist/communal · homophobic/transphobic · ableist),
+// matched as WHOLE WORDS, case-insensitive (see slurHits below).
+//
+// Scope is deliberate and matches unsaid's philosophy: raw emotion and profanity
+// (venting) are ALLOWED — this list targets hate aimed at a group, not swearing.
+// Context-dependent / reclaimed terms (e.g. the a-ending variant of the n-word)
+// are intentionally omitted pending review, to avoid false-positives on genuine
+// venting. A slur hit yields MESSAGES.harassment (a kind reword nudge), not a ban.
+//
+// TODO(before scale): replace/extend with a professionally SOURCED + REVIEWED
+// multilingual corpus (English + Hindi/Hinglish + regional). This baseline makes
+// the filter functional at launch — it is intentionally NOT comprehensive.
+export const SLUR_BLOCKLIST: string[] = [
+  // racial / ethnic / antisemitic (English)
+  'nigger', 'niggers', 'chink', 'chinks', 'gook', 'gooks', 'spic', 'spics',
+  'wetback', 'wetbacks', 'kike', 'kikes', 'paki', 'pakis', 'raghead', 'ragheads',
+  'sandnigger', 'sandniggers',
+  // homophobic / transphobic
+  'faggot', 'faggots', 'tranny', 'trannies',
+  // ableist
+  'retard', 'retards', 'retarded',
+  // casteist / communal / ethnic (India — Hindi / Hinglish)
+  'chamar', 'chamars', 'bhangi', 'bhangis', 'chinki', 'chinky', 'chinkis',
+  'katua', 'katuas', 'landya', 'landye', 'randi', 'randis',
+];
 
 export function slurHits(text: string): string[] {
   const hits: string[] = [];

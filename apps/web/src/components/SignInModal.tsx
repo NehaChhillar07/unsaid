@@ -10,6 +10,10 @@ import { useDialogA11y } from '@/lib/useDialogA11y';
 import { MaskIcon } from './MaskIcon';
 import styles from './modals.module.css';
 
+// magic-link flow is paused until a dedicated sender address exists
+// (see app/auth/page.tsx EMAIL_LOGIN_ENABLED)
+const EMAIL_LOGIN_ENABLED = false;
+
 export function SignInModal({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,9 +63,11 @@ export function SignInModal({ onClose }: { onClose: () => void }) {
             {error}
           </p>
         )}
-        <Link href="/auth" className={styles.ghostBtn}>
-          prefer email? get a magic link
-        </Link>
+        {EMAIL_LOGIN_ENABLED && (
+          <Link href="/auth" className={styles.ghostBtn}>
+            prefer email? get a magic link
+          </Link>
+        )}
         <button type="button" className={styles.ghostBtn} onClick={onClose}>
           keep reading for now
         </button>

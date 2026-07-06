@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   title: 'get in quietly',
 };
 
+// magic-link email flow is paused until a dedicated sender address exists
+// (emails currently go out from a personal gmail). flip to re-enable, and
+// re-enable the email provider in Supabase auth config too.
+const EMAIL_LOGIN_ENABLED = false;
+
 const ERRORS: Record<string, string> = {
   invalid: "that doesn't look like an email. try again?",
   send: "the link didn't send — give it another go in a moment.",
@@ -51,32 +56,36 @@ export default async function AuthPage({
               the quietest way in: no email, no password, nothing at all.
             </p>
             <AnonSignInButton />
-            <p className={styles.copy} style={{ marginTop: 18 }}>
-              or drop an email for a magic link — handy if you ever switch phones and want your
-              spills back.
-            </p>
-            {error && (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
+            {EMAIL_LOGIN_ENABLED && (
+              <>
+                <p className={styles.copy} style={{ marginTop: 18 }}>
+                  or drop an email for a magic link — handy if you ever switch phones and want
+                  your spills back.
+                </p>
+                {error && (
+                  <p className={styles.error} role="alert">
+                    {error}
+                  </p>
+                )}
+                <form action={sendMagicLink} className={styles.form}>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    autoComplete="email"
+                    placeholder="you@somewhere.quiet"
+                    aria-label="your email"
+                    className={styles.input}
+                  />
+                  <button type="submit" className={styles.submit}>
+                    send the link
+                  </button>
+                </form>
+              </>
             )}
-            <form action={sendMagicLink} className={styles.form}>
-              <input
-                type="email"
-                name="email"
-                required
-                autoComplete="email"
-                placeholder="you@somewhere.quiet"
-                aria-label="your email"
-                className={styles.input}
-              />
-              <button type="submit" className={styles.submit}>
-                send the link
-              </button>
-            </form>
             <p className={styles.fineprint}>
-              we never ask for your real name. your email is only for getting in and is never shown
-              to anyone — <Link href="/legal/anonymous">here&rsquo;s exactly what we hold</Link>.
+              we never ask for your real name. nothing here can identify you —{' '}
+              <Link href="/legal/anonymous">here&rsquo;s exactly what we hold</Link>.
             </p>
           </>
         )}

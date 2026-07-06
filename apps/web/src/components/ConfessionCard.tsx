@@ -5,7 +5,7 @@
 // which strips all handler-dependent buttons).
 import { useState } from 'react';
 import { useFeltBurst } from './FeltBurst';
-import { formatCount, relTime, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
+import { formatCount, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
 import { cardVars } from '@/lib/theme';
 import { RoleBadge } from './RoleBadge';
 import { MoodChip } from './MoodChip';
@@ -67,9 +67,6 @@ export function ConfessionCard({
       <header className={styles.header}>
         <div className={styles.headLeft}>
           <RoleBadge role={post.role_title} />
-          <span className={styles.time} suppressHydrationWarning>
-            {relTime(post.created_at)}
-          </span>
         </div>
         <div className={styles.headRight}>
           {post.mood && <MoodChip mood={post.mood} />}

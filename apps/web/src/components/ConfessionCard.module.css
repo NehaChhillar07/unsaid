@@ -85,17 +85,6 @@
   touch-action: manipulation;
 }
 
-.time {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  font-family: var(--font-ui);
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--ink-soft);
-}
-
 .body {
   min-height: 168px;
   display: flex;

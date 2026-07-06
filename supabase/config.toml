@@ -24,6 +24,27 @@ enable_signup = true
 enable_signup = true
 enable_confirmations = false
 
+
+# NOTE: site_url/redirects above are LOCAL-DEV values. Never `supabase config push`
+# this file against the prod project without fixing them first — it would clobber
+# the live auth settings. Email templates below are pushed via the Management API
+# (see supabase/templates/).
+[auth.email.template.confirmation]
+subject = "your quiet way in"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "your quiet way back in"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.recovery]
+subject = "get back into unsaid"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.email_change]
+subject = "confirm your new address"
+content_path = "./supabase/templates/email_change.html"
+
 # Every function requires a valid JWT — all writes are caller-authenticated.
 [functions.publish]
 verify_jwt = true

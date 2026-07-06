@@ -27,21 +27,28 @@ enable_confirmations = false
 # Every function requires a valid JWT — all writes are caller-authenticated.
 [functions.publish]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.react]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.report]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.mute]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.role-check]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.wipe-account]
 verify_jwt = true
+import_map = "./functions/deno.json"
 
 [functions.notify-batch]
 verify_jwt = true
+import_map = "./functions/deno.json"

@@ -24,6 +24,7 @@ import { CardDeck } from './CardDeck';
 import { CardActionSheet, type ReportReason } from './CardActionSheet';
 import { CommentsSheet } from './CommentsSheet';
 import { announce } from './LiveStatus';
+import { sendPostEvent } from '@/lib/postLive';
 import styles from './FeedScreen.module.css';
 
 const MODES: Mode[] = ['personal', 'professional'];
@@ -125,11 +126,22 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
     return () => window.clearInterval(t);
   }, [sb, mode]);
 
+  // accepting new drops is a visible moment: the current deck exhales out,
+  // the fresh cards drop in from above (wave re-keys the deck wrapper).
+  const [wave, setWave] = useState(0);
+  const [waving, setWaving] = useState(false);
   const acceptNew = useCallback(async () => {
+    if (waving) return;
+    setWaving(true);
+    announce('gathering the new drops');
+    const exit = new Promise((r) => window.setTimeout(r, 340));
+    await Promise.all([refetchFeeds(), exit]);
     setNewCount(0);
-    await refetchFeeds();
-    flash('fresh drops added 🤍');
-  }, [refetchFeeds, flash]);
+    announcedNew.current = 0;
+    setWave((w) => w + 1);
+    setWaving(false);
+    flash('fresh drops, just for you 🤍');
+  }, [refetchFeeds, flash, waving]);
 
   // ── reactions ────────────────────────────────────────────────
   // the "felt this" celebration is owned entirely by FeltBurstProvider — one
@@ -142,9 +154,14 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       const current = reactions[post.id] ?? null;
       const next = current === type ? null : type;
       setReactions((r) => ({ ...r, [post.id]: next }));
-      react(sb, post.id, type).catch(() => {
-        setReactions((r) => ({ ...r, [post.id]: current }));
-      });
+      react(sb, post.id, type)
+        .then(() => {
+          // everyone else looking at this card sees the heart land live
+          if (type === 'felt') sendPostEvent(post.id, 'felt', { delta: next === 'felt' ? 1 : -1 });
+        })
+        .catch(() => {
+          setReactions((r) => ({ ...r, [post.id]: current }));
+        });
     },
     [sb, reactions],
   );
@@ -274,21 +291,23 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   return (
     <div className={styles.screen}>
       <h1 className="sr-only">unsaid — the feed</h1>
-      <CardDeck
-        posts={feeds[mode]}
-        mode={mode}
-        reactions={reactions}
-        savedIds={savedIds}
-        onReact={handleReact}
-        onNotForMe={handleNotForMe}
-        onReply={(post) => setCommentsPost(post)}
-        onSwipeUp={(post) => setCommentsPost(post)}
-        onLongPress={(post) => setActionPost(post)}
-        onMore={(post) => setActionPost(post)}
-        onToggleSave={handleToggleSave}
-        onCommit={handleCommit}
-        paused={overlayOpen}
-      />
+      <div key={wave} className={`${styles.deckWave}${waving ? ` ${styles.deckWaveOut}` : ''}`}>
+        <CardDeck
+          posts={feeds[mode]}
+          mode={mode}
+          reactions={reactions}
+          savedIds={savedIds}
+          onReact={handleReact}
+          onNotForMe={handleNotForMe}
+          onReply={(post) => setCommentsPost(post)}
+          onSwipeUp={(post) => setCommentsPost(post)}
+          onLongPress={(post) => setActionPost(post)}
+          onMore={(post) => setActionPost(post)}
+          onToggleSave={handleToggleSave}
+          onCommit={handleCommit}
+          paused={overlayOpen}
+        />
+      </div>
 
       {/* desktop spill button (the tab bar carries it on phones) */}
       <button type="button" className={styles.spillBtn} onClick={() => app.openCompose()}>
@@ -305,10 +324,15 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
       </button>
 
       {/* new drops pill */}
-      {newCount > 0 && (
-        <button type="button" className={styles.newDrops} onClick={() => void acceptNew()}>
+      {(newCount > 0 || waving) && (
+        <button
+          type="button"
+          className={`${styles.newDrops}${waving ? ` ${styles.newDropsBusy}` : ''}`}
+          onClick={() => void acceptNew()}
+          disabled={waving}
+        >
           <span className={styles.newDropsDot} />
-          {newCount} new {newCount === 1 ? 'drop' : 'drops'}
+          {waving ? 'gathering…' : `${newCount} new ${newCount === 1 ? 'drop' : 'drops'}`}
         </button>
       )}
 

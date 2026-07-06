@@ -5,10 +5,11 @@
 // through the publish edge function (comment path, stricter moderation).
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { COMMENT_MAX_CHARS, relTime, type FeedPost, type PostComment } from '@unsaid/tokens';
+import { COMMENT_MAX_CHARS, type FeedPost, type PostComment } from '@unsaid/tokens';
 import { fetchComments, publish } from '@unsaid/api';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useDialogA11y } from '@/lib/useDialogA11y';
+import { sendPostEvent, subscribePostLive } from '@/lib/postLive';
 import { useApp } from './AppContext';
 import { RoleBadge } from './RoleBadge';
 import styles from './CommentsSheet.module.css';
@@ -32,6 +33,8 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [replyTo, setReplyTo] = useState<PostComment | null>(null);
+  // ids that arrived live while the sheet is open — they pop in
+  const [liveIds, setLiveIds] = useState<Set<string>>(new Set());
   const listRef = useRef<HTMLDivElement>(null);
   const panelRef = useDialogA11y<HTMLDivElement>(onClose);
 
@@ -49,6 +52,25 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
       on = false;
     };
   }, [post.id]);
+
+  // someone else replies while you're reading — it lands live
+  useEffect(
+    () =>
+      subscribePostLive(post.id, {
+        onComment: (fresh) => {
+          setComments((c) => {
+            if (!c) return c;
+            if (c.some((x) => x.id === fresh.id)) return c;
+            return [...c, fresh];
+          });
+          setLiveIds((ids) => new Set(ids).add(fresh.id));
+          window.setTimeout(() => {
+            listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+          }, 60);
+        },
+      }),
+    [post.id],
+  );
 
   const myRole =
     app.identities?.find((i) => i.mode === post.mode)?.role_title ?? 'anonymous';
@@ -82,6 +104,8 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
         setText('');
         setReplyTo(null);
         onPosted?.(post.id);
+        // let everyone else reading this card see it land
+        sendPostEvent(post.id, 'comment', fresh);
         window.setTimeout(() => {
           listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
         }, 30);
@@ -143,11 +167,12 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
             <div key={c.id}>
               <CommentRow
                 comment={c}
+                live={liveIds.has(c.id)}
                 onReply={post.comments_enabled ? () => setReplyTo(c) : undefined}
               />
               {childrenOf(c.id).map((child) => (
                 <div key={child.id} className={styles.nested}>
-                  <CommentRow comment={child} />
+                  <CommentRow comment={child} live={liveIds.has(child.id)} />
                 </div>
               ))}
             </div>
@@ -222,14 +247,19 @@ export function CommentsSheet({ post, onClose, onPosted }: Props) {
   );
 }
 
-function CommentRow({ comment, onReply }: { comment: PostComment; onReply?: () => void }) {
+function CommentRow({
+  comment,
+  live = false,
+  onReply,
+}: {
+  comment: PostComment;
+  live?: boolean;
+  onReply?: () => void;
+}) {
   return (
-    <div className={styles.comment}>
+    <div className={`${styles.comment}${live ? ` ${styles.commentLive}` : ''}`}>
       <div className={styles.commentHead}>
         <RoleBadge role={comment.role_title} flat />
-        <span className={styles.commentTime} suppressHydrationWarning>
-          {relTime(comment.created_at)}
-        </span>
       </div>
       <p className={styles.commentBody}>{comment.body}</p>
       {onReply && (

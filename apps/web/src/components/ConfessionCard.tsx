@@ -3,10 +3,11 @@
 // confession card — full design fidelity port of unsaid-feed.jsx ConfessionCard.
 // works server-rendered too (rendered from server pages with interactive=false,
 // which strips all handler-dependent buttons).
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFeltBurst } from './FeltBurst';
 import { formatCount, type FeedPost, type Mode, type ReactionType } from '@unsaid/tokens';
 import { cardVars } from '@/lib/theme';
+import { subscribePostLive } from '@/lib/postLive';
 import { RoleBadge } from './RoleBadge';
 import { MoodChip } from './MoodChip';
 import styles from './ConfessionCard.module.css';
@@ -59,10 +60,37 @@ export function ConfessionCard({
     onFelt?.(e);
   };
   const felted = feltActive || burst > 0;
-  const feltCount = post.felt_count + (feltActive ? 1 : 0);
-  const replyLabel = `${formatCount(post.comment_count)} ${post.comment_count === 1 ? 'reply' : 'replies'}`;
+
+  // live activity from other people on this same card — hearts and replies
+  // land as they happen (broadcast channel per post; see lib/postLive.ts)
+  const [liveFelt, setLiveFelt] = useState(0);
+  const [liveReplies, setLiveReplies] = useState(0);
+  const [livePulse, setLivePulse] = useState(0);
+  useEffect(() => {
+    // server data refreshed — it already includes what we counted live
+    setLiveFelt(0);
+    setLiveReplies(0);
+  }, [post.id, post.felt_count, post.comment_count]);
+  useEffect(() => {
+    if (!interactive) return;
+    return subscribePostLive(post.id, {
+      onFelt: ({ delta }) => {
+        setLiveFelt((f) => f + delta);
+        if (delta > 0) setLivePulse((p) => p + 1);
+      },
+      onComment: () => setLiveReplies((r) => r + 1),
+    });
+  }, [post.id, interactive]);
+
+  const feltCount = Math.max(0, post.felt_count + liveFelt + (feltActive ? 1 : 0));
+  const totalReplies = post.comment_count + liveReplies;
+  const replyLabel = `${formatCount(totalReplies)} ${totalReplies === 1 ? 'reply' : 'replies'}`;
   return (
-    <article className={`${styles.card}${uniform ? ` ${styles.uniform}` : ''}`} style={cardVars(mode, post.id)}>
+    <article
+      className={`${styles.card}${uniform ? ` ${styles.uniform}` : ''}`}
+      style={cardVars(mode, post.id)}
+      data-post-id={post.id}
+    >
       <div className={styles.sheen} />
       <header className={styles.header}>
         <div className={styles.headLeft}>
@@ -123,8 +151,8 @@ export function ConfessionCard({
             aria-pressed={feltActive}
           >
             <span
-              key={burst}
-              className={`${styles.feltGlyph}${burst ? ` ${styles.feltGlyphBeat}` : ''}`}
+              key={`${burst}-${livePulse}`}
+              className={`${styles.feltGlyph}${burst > 0 || livePulse > 0 ? ` ${styles.feltGlyphBeat}` : ''}`}
               aria-hidden="true"
             >
               {felted ? '❤️' : '🤍'}

@@ -84,8 +84,13 @@
 }
 
 .submit {
+  width: 100%;
   height: var(--ctl-h);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0 22px;
+  margin-bottom: 18px;
   border-radius: var(--r-ctl);
   background: linear-gradient(140deg, var(--accent), var(--accent-deep));
   color: #fff;

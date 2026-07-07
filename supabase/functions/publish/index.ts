@@ -10,7 +10,7 @@ import {
   CRISIS_EXPRESSION_RX, CRISIS_METHOD_RX,
   DEANON_RULES, deanonHits, slurHits, topicFor, MESSAGES,
 } from '../_shared/rules.ts';
-import { callOpenAIModeration, moderationBlocks } from '../_shared/moderation.ts';
+import { moderateText } from '../_shared/moderation.ts';
 import { checkRateLimit, limitFor } from '../_shared/ratelimit.ts';
 
 interface PublishRequest {
@@ -143,12 +143,11 @@ Deno.serve(async (req) => {
       return json({ verdict: 'blocked', message: MESSAGES.harassment });
     }
 
-    // ── OpenAI moderation ───────────────────────────────────────────────
-    const mod = await callOpenAIModeration(body);
-    if (mod.skipped) ruleHits.push('no-moderation-key');
-    const overThreshold = moderationBlocks(mod, kind);
-    if (overThreshold.length > 0) {
-      await logModeration(supa, kind, null, 'blocked', mod.scores, overThreshold);
+    // ── semantic moderation (Groq → OpenAI → pass) ──────────────────────
+    const mod = await moderateText(body, kind);
+    if (mod.skipped) ruleHits.push('no-moderation-provider');
+    if (mod.flagged) {
+      await logModeration(supa, kind, null, 'blocked', mod.scores, mod.blocks);
       return json({ verdict: 'blocked', message: MESSAGES.harassment });
     }
 

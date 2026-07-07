@@ -10,7 +10,7 @@ import { useApp } from '../AppContext';
 import { MaskIcon } from '../MaskIcon';
 import { ModeToggle } from '../ModeToggle';
 import { CardDeck } from '../CardDeck';
-import { buildDemoFeed, makeVisitorPost } from '@/lib/demoFeed';
+import { makeVisitorPost } from '@/lib/demoFeed';
 
 const accent = 'var(--accent)';
 const { cream, creamSoft, creamFaint } = THRESHOLD;
@@ -29,13 +29,12 @@ export function ExploreLanding({
   const { mode } = app;
   const [resetKey, setResetKey] = useState(0);
 
-  // default anonymous confessions so the preview always reads as a real feed —
-  // never the empty "feed is warming up" state. live posts win when present.
-  const demo = useMemo(() => buildDemoFeed(), []);
+  // real anonymous feed only — when it's empty the deck's end state invites
+  // the visitor to spill first (fresh community, no canned cards)
   const posts = useMemo(() => {
-    const base = feeds[mode].length ? feeds[mode] : demo[mode];
+    const base = feeds[mode];
     return submitted ? [makeVisitorPost(mode, submitted), ...base] : base;
-  }, [feeds, demo, mode, submitted]);
+  }, [feeds, mode, submitted]);
 
   // reacting / replying need a self — gently surface the sign-in modal
   const nudge = () => app.setSignInOpen(true);

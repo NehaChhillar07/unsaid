@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatCount, relTime, type FeedPost, type Mode, type OwnPost } from '@unsaid/tokens';
+import { formatCount, relTime, TOPICS, type FeedPost, type Mode, type OwnPost, type TopicId } from '@unsaid/tokens';
 import {
   deleteOwnPost,
   fetchDraft,
@@ -372,10 +372,16 @@ function RoleTitlesModal({ onClose }: { onClose: () => void }) {
   const proIdent = app.identities?.find((i) => i.mode === 'professional');
   const [personalRole, setPersonalRole] = useState(personalIdent?.role_title ?? '');
   const [proRole, setProRole] = useState(proIdent?.role_title ?? '');
+  // "feelings" (topics) — shared across both selves, like onboarding
+  const [picked, setPicked] = useState<TopicId[]>(
+    personalIdent?.topics.length ? personalIdent.topics : (proIdent?.topics ?? []),
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const personalWarning = useRoleWarning(personalRole);
   const proWarning = useRoleWarning(proRole);
+  const toggleTopic = (id: TopicId) =>
+    setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   const save = async () => {
     if (saving) return;
@@ -383,14 +389,12 @@ function RoleTitlesModal({ onClose }: { onClose: () => void }) {
     setError(null);
     try {
       const sb = createSupabaseBrowserClient();
-      const jobs: Promise<void>[] = [];
-      if (personalRole.trim() && personalRole.trim() !== personalIdent?.role_title) {
-        jobs.push(upsertIdentity(sb, 'personal', personalRole.trim(), personalIdent?.topics ?? []));
-      }
-      if (proRole.trim() && proRole.trim() !== proIdent?.role_title) {
-        jobs.push(upsertIdentity(sb, 'professional', proRole.trim(), proIdent?.topics ?? []));
-      }
-      await Promise.all(jobs);
+      // always write both selves so a title/topic change lands even when only
+      // one field was touched (upsert is idempotent).
+      await Promise.all([
+        upsertIdentity(sb, 'personal', (personalRole.trim() || 'anonymous'), picked),
+        upsertIdentity(sb, 'professional', (proRole.trim() || 'anonymous'), picked),
+      ]);
       await app.refreshIdentities();
       onClose();
     } catch (err) {
@@ -442,6 +446,26 @@ function RoleTitlesModal({ onClose }: { onClose: () => void }) {
         </p>
         {field('personal', personalRole, setPersonalRole, personalWarning)}
         {field('professional', proRole, setProRole, proWarning)}
+
+        <div className={styles.feelingsLabel}>what&rsquo;s been on your mind?</div>
+        <div className={styles.feelings}>
+          {TOPICS.map((t) => {
+            const on = picked.includes(t.id);
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className={`${styles.feelingChip}${on ? ` ${styles.feelingChipOn}` : ''}`}
+                aria-pressed={on}
+                onClick={() => toggleTopic(t.id)}
+              >
+                <span aria-hidden="true">{t.glyph}</span>
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+
         {error && (
           <p className={styles.sheetError} role="alert">
             {error}

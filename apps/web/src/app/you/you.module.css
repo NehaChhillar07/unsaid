@@ -446,6 +446,55 @@
   color: var(--ink-soft);
 }
 
+.feelingsLabel {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-ambient);
+  margin: 8px 0 10px;
+}
+
+.feelings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.feelingChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap-min);
+  padding: var(--pad-pill);
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  border: 1.5px solid var(--glass-border);
+  color: var(--ink-ambient);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  touch-action: manipulation;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.12s;
+}
+
+.feelingChip:active {
+  transform: scale(0.96);
+}
+
+.feelingChipOn {
+  background: var(--ink-ambient);
+  border-color: transparent;
+  color: var(--ink-on-ambient);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .feelingChip:not(.feelingChipOn):hover {
+    cursor: pointer;
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-border));
+  }
+}
+
 .roleHelperWarn {
   color: var(--danger);
 }

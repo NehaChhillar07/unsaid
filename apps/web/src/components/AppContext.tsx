@@ -13,7 +13,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { fetchIdentities, fetchNotifications } from '@unsaid/api';
 import type { Identity, Mode, MoodKey } from '@unsaid/tokens';
@@ -22,6 +22,12 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 const MODE_KEY = 'unsaid:mode';
 // per-session latch so the welcome overlay plays at most once per tab session
 const WELCOME_LATCH = 'unsaid:welcomeShown';
+// durable device flag: this device belongs to a set-up user. lets the pre-paint
+// script in layout.tsx decide — synchronously, no network — to lead the landing
+// with the welcome-back instead of flashing it over the feed.
+const ONBOARDED_FLAG = 'unsaid:onboarded';
+// once dismissed, the "make it yours" prompt never auto-shows again (it lives in /you)
+const PERSONALIZE_DISMISSED = 'unsaid:personalizeDismissed';
 
 export interface ComposeRequest {
   mode: Mode;
@@ -54,6 +60,16 @@ interface AppState {
   closeCompose: () => void;
   signInOpen: boolean;
   setSignInOpen: (open: boolean) => void;
+  /** the optional "make it yours" sheet is showing */
+  personalizeOpen: boolean;
+  /** surface the personalize sheet (from browsing or a spill attempt) */
+  openPersonalize: (intent?: 'browse' | 'compose') => void;
+  /** eligible for the gentle after-browsing nudge (not yet set up, not dismissed) */
+  personalizeEligible: boolean;
+  /** close the sheet and remember not to auto-show it again */
+  dismissPersonalize: () => void;
+  /** saved a title + feelings — close, and continue any compose intent */
+  completePersonalize: () => void;
   /** bumped after a successful publish so the feed refetches */
   feedVersion: number;
   bumpFeed: () => void;
@@ -68,12 +84,8 @@ export function useApp(): AppState {
   return v;
 }
 
-/** routes that require finished onboarding when signed in */
-const GATED_PATHS = new Set(['/', '/felt', '/you']);
-
 export function UnsaidAppProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [identities, setIdentities] = useState<Identity[] | null>(null);
@@ -83,22 +95,44 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
   const [signInOpen, setSignInOpen] = useState(false);
   const [feedVersion, setFeedVersion] = useState(0);
   const [welcome, setWelcome] = useState<{ firstTime: boolean } | null>(null);
+  const [personalizeOpen, setPersonalizeOpen] = useState(false);
+  const [personalizeDismissed, setPersonalizeDismissed] = useState(false);
+  const composeAfterPersonalize = useRef(false);
   const welcomeLatch = useRef(false);
   const modeRef = useRef<Mode>('personal');
   modeRef.current = mode;
 
-  // session
+  // session — everyone gets in with no gate: if there's no session yet, we
+  // silently create an anonymous one so the visitor lands straight on the feed
+  // and can browse + react. posting still asks for a title first (below).
   useEffect(() => {
     const sb = createSupabaseBrowserClient();
     sb.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-      setAuthReady(true);
+      if (data.user) {
+        setUser(data.user);
+        setAuthReady(true);
+      } else {
+        sb.auth
+          .signInAnonymously()
+          .then(({ data: anon }) => setUser(anon.user ?? null))
+          .catch(() => {})
+          .finally(() => setAuthReady(true));
+      }
     });
     const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setAuthReady(true);
     });
     return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // remember a prior dismissal of the personalize nudge
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem(PERSONALIZE_DISMISSED) === '1') setPersonalizeDismissed(true);
+    } catch {
+      /* private mode — fine */
+    }
   }, []);
 
   // remembered world
@@ -171,12 +205,21 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
 
   const onboarded = identities !== null && identities.length >= 2;
 
-  // post-auth gate: signed in but the two selves aren't set up yet
+  // mirror onboarded into a durable device flag so the next cold load can decide,
+  // synchronously and before paint, to lead with the welcome-back (see layout.tsx).
   useEffect(() => {
-    if (!authReady || !user || identities === null) return;
-    if (identities.length >= 2) return;
-    if (GATED_PATHS.has(pathname)) router.replace('/welcome');
-  }, [authReady, user, identities, pathname, router]);
+    if (!onboarded) return;
+    try {
+      window.localStorage.setItem(ONBOARDED_FLAG, '1');
+    } catch {
+      /* private mode — the returning-user effect below is the fallback */
+    }
+  }, [onboarded]);
+
+  // eligible for the gentle after-browsing nudge — has a session, hasn't set up
+  // their selves yet, and hasn't dismissed the prompt before.
+  const personalizeEligible =
+    authReady && !!user && identities !== null && identities.length < 2 && !personalizeDismissed;
 
   const triggerWelcome = useCallback((firstTime: boolean) => {
     welcomeLatch.current = true;
@@ -212,20 +255,43 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
     setWelcome({ firstTime: false });
   }, [authReady, user, onboarded]);
 
+  const openPersonalize = useCallback((intent: 'browse' | 'compose' = 'browse') => {
+    composeAfterPersonalize.current = intent === 'compose';
+    setPersonalizeOpen(true);
+  }, []);
+
+  const dismissPersonalize = useCallback(() => {
+    composeAfterPersonalize.current = false;
+    setPersonalizeOpen(false);
+    setPersonalizeDismissed(true);
+    try {
+      window.localStorage.setItem(PERSONALIZE_DISMISSED, '1');
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const openCompose = useCallback(
     (req?: Partial<ComposeRequest>) => {
-      if (!user) {
-        setSignInOpen(true);
-        return;
-      }
+      // posting needs a title (an identity for the world). if they haven't set
+      // one up yet, ask for it first — the same optional prompt, now required
+      // for this action — then continue into compose.
       if (!onboarded) {
-        router.push('/welcome');
+        openPersonalize('compose');
         return;
       }
       setCompose({ mode: req?.mode ?? modeRef.current, ...req });
     },
-    [user, onboarded, router],
+    [onboarded, openPersonalize],
   );
+
+  const completePersonalize = useCallback(() => {
+    const resumeCompose = composeAfterPersonalize.current;
+    composeAfterPersonalize.current = false;
+    setPersonalizeOpen(false);
+    setPersonalizeDismissed(true);
+    if (resumeCompose) setCompose({ mode: modeRef.current });
+  }, []);
 
   const closeCompose = useCallback(() => setCompose(null), []);
   const bumpFeed = useCallback(() => setFeedVersion((v) => v + 1), []);
@@ -237,6 +303,7 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
     setWelcome(null);
     try {
       window.sessionStorage.removeItem(WELCOME_LATCH);
+      window.localStorage.removeItem(ONBOARDED_FLAG);
     } catch {
       /* ignore */
     }
@@ -264,6 +331,11 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
       closeCompose,
       signInOpen,
       setSignInOpen,
+      personalizeOpen,
+      openPersonalize,
+      personalizeEligible,
+      dismissPersonalize,
+      completePersonalize,
       feedVersion,
       bumpFeed,
       signOut,
@@ -272,7 +344,8 @@ export function UnsaidAppProvider({ children }: { children: ReactNode }) {
       user, authReady, identities, onboarded, refreshIdentities,
       welcome, triggerWelcome, clearWelcome, mode, setMode,
       unread, refreshUnread, clearUnread, compose, openCompose, closeCompose,
-      signInOpen, feedVersion, bumpFeed, signOut,
+      signInOpen, personalizeOpen, openPersonalize, personalizeEligible,
+      dismissPersonalize, completePersonalize, feedVersion, bumpFeed, signOut,
     ],
   );
 

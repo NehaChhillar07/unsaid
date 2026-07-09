@@ -522,3 +522,21 @@ html[data-theme='dark'] .themed {
 html[data-theme='dark'] .themed {
   --ink-on-ambient: #2d1a26;
 }
+
+/* ── welcome-back greet cover ──
+   a static, pre-paint bridge that lets the returning-user welcome-back LEAD
+   instead of flashing over the feed. the inline script in layout.tsx sets
+   data-greet on <html> before first paint; this dark layer then covers the SSR
+   feed until <WelcomeBack> (z-index 80) mounts on top and LandingClient removes
+   data-greet. background matches THRESHOLD.welcomeBg (packages/tokens/src/index.ts:181)
+   so the handoff is seamless. */
+#greet-cover {
+  display: none;
+}
+html[data-greet='1'] #greet-cover {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: radial-gradient(120% 120% at 50% 38%, #221c18 0%, #1a1512 52%, #120e0c 100%);
+}

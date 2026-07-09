@@ -73,15 +73,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${lora.variable}`} suppressHydrationWarning>
       <head>
-        {/* apply the persisted theme override before first paint (no flash) */}
+        {/* before first paint (no flash): apply the persisted theme, and — for a
+            returning, set-up user opening the landing — raise the greet cover so
+            the welcome-back leads instead of flashing over an already-painted feed.
+            #greet-cover (below) is the static bridge until React mounts <WelcomeBack>. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){try{var t=localStorage.getItem('unsaid:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}})()",
+              "(function(){try{var t=localStorage.getItem('unsaid:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;if(location.pathname==='/'&&localStorage.getItem('unsaid:onboarded')==='1'&&sessionStorage.getItem('unsaid:welcomeShown')!=='1'){document.documentElement.dataset.greet='1';sessionStorage.setItem('unsaid:welcomeShown','1')}}catch(e){}})()",
           }}
         />
       </head>
       <body>
+        {/* static bridge cover — inert unless the pre-paint script set data-greet;
+            paints the welcome-back background over the SSR feed until <WelcomeBack> mounts. */}
+        <div id="greet-cover" aria-hidden="true" />
         <a href="#content" className="skip-link">
           skip to content
         </a>

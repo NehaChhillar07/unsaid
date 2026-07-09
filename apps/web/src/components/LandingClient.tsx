@@ -1,14 +1,15 @@
 'use client';
 
-// landing orchestrator — signed-out visitors get the entry flow (intro →
-// explore); signed-in (onboarded) users get the full-viewport swipe feed inside
-// the app shell, with the welcome-reveal overlay mounted ON TOP of it. the
-// warm↔cool world reveal lives in <Chrome>.
+// landing orchestrator — no gate: everyone lands straight on the swipe feed
+// inside the app shell (an anonymous session is created silently in
+// AppContext). the optional "make it yours" prompt surfaces after a little
+// browsing. the warm↔cool world reveal lives in <Chrome>.
+import { useEffect, useState } from 'react';
 import type { FeedPost, Mode } from '@unsaid/tokens';
 import { useApp } from './AppContext';
 import { Chrome } from './Chrome';
 import { FeedScreen } from './FeedScreen';
-import { EntryFlow } from './entry/EntryFlow';
+import { PersonalizePrompt } from './PersonalizePrompt';
 import { WelcomeBack } from './entry/WelcomeBack';
 
 interface Props {
@@ -17,14 +18,31 @@ interface Props {
 
 export function LandingClient({ feeds }: Props) {
   const app = useApp();
-  const signedIn = !!app.user && app.onboarded;
+  // returning, set-up users: the pre-paint script in layout.tsx already raised the
+  // #greet-cover (welcome-back bg) over the SSR feed. read that decision on mount,
+  // then hand off to <WelcomeBack> and lift the static bridge — same frame, so the
+  // welcome-back leads instead of flashing over an already-painted feed.
+  const [greet, setGreet] = useState(false);
+  useEffect(() => {
+    if (document.documentElement.dataset.greet === '1') {
+      setGreet(true);
+      delete document.documentElement.dataset.greet;
+    }
+  }, []);
+
+  // the greet path (cold load) and app.welcome (just-onboarded hand-off from
+  // /welcome) both resolve to the same short welcome-back over the feed.
+  const showWelcome = greet || app.welcome != null;
+  const finishWelcome = () => {
+    setGreet(false);
+    app.clearWelcome();
+  };
 
   return (
-    <Chrome chrome={signedIn} feed={signedIn}>
-      {signedIn ? <FeedScreen initialFeeds={feeds} /> : <EntryFlow feeds={feeds} />}
-      {/* signed-in users get the short welcome-back over the feed (the long
-          first-time welcome already played pre-auth in EntryFlow). */}
-      {signedIn && app.welcome && <WelcomeBack variant="welcome-back" onDone={app.clearWelcome} />}
+    <Chrome chrome feed>
+      <FeedScreen initialFeeds={feeds} />
+      <PersonalizePrompt />
+      {showWelcome && <WelcomeBack variant="welcome-back" onDone={finishWelcome} />}
     </Chrome>
   );
 }

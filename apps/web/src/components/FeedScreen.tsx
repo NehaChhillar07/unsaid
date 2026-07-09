@@ -176,12 +176,19 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
   );
 
   // ── seen tracking ────────────────────────────────────────────
+  // after a little browsing, gently surface the optional "make it yours"
+  // prompt (once) — only if they haven't set up or dismissed it.
+  const commitCount = useRef(0);
   const handleCommit = useCallback(
     (post: FeedPost) => {
       committedIds.current.add(post.id);
       void markSeen(sb, post.id).catch(() => {});
+      commitCount.current += 1;
+      if (commitCount.current === 3 && app.personalizeEligible && !app.personalizeOpen) {
+        app.openPersonalize('browse');
+      }
     },
-    [sb],
+    [sb, app],
   );
 
   // ── action sheet ─────────────────────────────────────────────
@@ -286,7 +293,13 @@ export function FeedScreen({ initialFeeds }: { initialFeeds: Record<Mode, FeedPo
     setCommentsPost((c) => (c && c.id === postId ? { ...c, comment_count: c.comment_count + 1 } : c));
   }, []);
 
-  const overlayOpen = !!(actionPost || commentsPost || app.compose || app.signInOpen);
+  const overlayOpen = !!(
+    actionPost ||
+    commentsPost ||
+    app.compose ||
+    app.signInOpen ||
+    app.personalizeOpen
+  );
 
   return (
     <div className={styles.screen}>

@@ -13,8 +13,6 @@ An anonymous confessions app with two worlds, personal and professional. Swipe f
 
 Designed and built solo in three weeks. Figma for the design system, Claude Code for the build.
 
-**Figma file (view only):** {{FIGMA_UNSAID}}
-
 ## How design maps to code
 
 The design system lives in code, not just in Figma.

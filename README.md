@@ -11,18 +11,18 @@
 
 An anonymous confessions app with two worlds, personal and professional. Swipe feed, empathy-first reactions, comments, moderation, and a PWA install flow.
 
-Designed and built solo in three weeks. Figma for the design system, Claude Code as my pair programmer for the build.
+Designed and built solo in three weeks. Designed in Claude Design, in real HTML and CSS; built with Claude Code as my pair programmer.
 
 ## How design maps to code
 
-The design system lives in code, not just in Figma.
+The design was made in code, so the design system is code from the first screen.
 
-- `packages/tokens` holds every world, mood, topic and gradient as typed TypeScript, with the same names as the Figma variables.
+- `packages/tokens` holds every world, mood, topic and gradient as typed TypeScript, with the same names the design uses.
 - `apps/web/src/lib/theme.ts` turns those tokens into CSS custom properties, with light and dark pairs resolved per scope.
 - Components use the variables (`--accent`, `--sp-2`, `--r-card`), never hardcoded values. Change a token once and every screen updates.
 - `apps/web/src/lib/useDialogA11y.ts` handles focus trapping, Escape and focus return for every overlay. `prefersReducedMotion` guards every animation. Tap targets are a token (`--tap-min: 44px`).
 
-Open `ConfessionCard.tsx` next to the Figma component and the props match the variants.
+The props on `ConfessionCard.tsx` match the card's variants in the design.
 
 ## Product decisions that live in the code
 
